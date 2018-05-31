@@ -3,4 +3,5 @@
     <string name="lbl_workoutTag">Workout Tag</string>
     <string name="hint_workoutTag">Enter the workout tag you wish to view.</string>
     <string name="lbl_getWorkout">Get Workout</string>
+    <string name="default_workoutTag">EDVCA4AJL56V27I3UAUKM72C74</string>
 </resources>
