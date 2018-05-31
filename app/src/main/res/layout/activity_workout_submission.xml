@@ -15,6 +15,7 @@
         android:layout_marginRight="131dp"
         android:layout_marginStart="132dp"
         android:layout_marginTop="45dp"
+        android:onClick="getWorkout"
         android:text="@string/lbl_getWorkout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
