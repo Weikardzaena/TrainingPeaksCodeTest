@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">TrainingPeaksCodeTest</string>
+    <string name="lbl_workoutTag">Workout Tag</string>
+    <string name="hint_workoutTag">Enter the workout tag you wish to view.</string>
+    <string name="lbl_getWorkout">Get Workout</string>
 </resources>
