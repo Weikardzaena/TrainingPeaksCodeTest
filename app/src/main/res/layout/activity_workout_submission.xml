@@ -23,7 +23,7 @@
 
     <EditText
         android:id="@+id/editText_workoutTag"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="5dp"
         android:layout_marginLeft="5dp"
@@ -31,10 +31,10 @@
         android:layout_marginStart="5dp"
         android:layout_marginTop="45dp"
         android:hint="@string/hint_workoutTag"
-        android:inputType="text"
+        android:inputType="textNoSuggestions"
         android:text="@string/default_workoutTag"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintWidth_default="wrap"/>
+        app:layout_constrainedWidth="true"/>
 </android.support.constraint.ConstraintLayout>
