@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.kotula.nikolai.trainingpeakscodetest.R;
+import com.kotula.nikolai.trainingpeakscodetest.activities.WorkoutSubmission;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.dummy.DummyContent;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.dummy.DummyContent.DummyItem;
 import com.kotula.nikolai.trainingpeakscodetest.models.HeartRateModel;
@@ -53,10 +54,10 @@ public class PeakHeartRateFragment extends Fragment implements LifecycleOwner {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static PeakHeartRateFragment newInstance(int columnCount) {
+    public static PeakHeartRateFragment newInstance(String workoutTag) {
         PeakHeartRateFragment fragment = new PeakHeartRateFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putString(WorkoutSubmission.WORKOUT_TAG, workoutTag);
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,6 +71,7 @@ public class PeakHeartRateFragment extends Fragment implements LifecycleOwner {
 
         // Always remember to call init() on this after getting an instance from the view model providers!
         mHeartRateModel.init(getContext());
+        mHeartRateModel.updatePeakHeartRates(getArguments().getString(WorkoutSubmission.WORKOUT_TAG));
     }
 
     @Override

@@ -4,6 +4,7 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.ResultReceiver;
 
 import com.kotula.nikolai.trainingpeakscodetest.repos.concrete.HttpWorkoutRESTClient;
 import com.kotula.nikolai.trainingpeakscodetest.repos.interfaces.IWorkoutRepo;
@@ -20,7 +21,7 @@ public class WorkoutService extends IntentService {
     private static final String EXTRA_WORKOUT_TAG = "com.kotula.nikolai.trainingpeakscodetest.services.extra.WORKOUT_TAG";
 
     private IWorkoutRepo mWorkoutRepo;
-    private WorkoutResultReceiver mWorkoutReceiver;
+    private ResultReceiver mResultReceiver;
 
     public WorkoutService() {
         super("WorkoutService");
@@ -68,8 +69,8 @@ public class WorkoutService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-            mWorkoutReceiver = intent.getParcelableExtra(WorkoutResultReceiver.WORKOUT_RESULTS_RECEIVER_TAG);
-            if ((mWorkoutReceiver != null) && (mWorkoutRepo != null)) {
+            mResultReceiver = intent.getParcelableExtra(WorkoutResultReceiver.WORKOUT_RESULTS_RECEIVER_TAG);
+            if ((mResultReceiver != null) && (mWorkoutRepo != null)) {
                 final String action = intent.getAction();
                 if (ACTION_FETCH_PEAK_HEART_RATES.equals(action)) {
                     final String workoutTag = intent.getStringExtra(EXTRA_WORKOUT_TAG);
@@ -87,10 +88,10 @@ public class WorkoutService extends IntentService {
      * parameters.
      */
     private void handleActionFetchPeakHeartRates(String workoutTag) {
-        if ((mWorkoutRepo != null) && (mWorkoutReceiver != null)) {
+        if ((mWorkoutRepo != null) && (mResultReceiver != null)) {
             Bundle bundle = new Bundle();
             mWorkoutRepo.getPeakHeartRates(); // blocking operation.
-            mWorkoutReceiver.onReceiveResult(0, bundle);
+            mResultReceiver.send(0, bundle);
         }
     }
 
@@ -99,10 +100,10 @@ public class WorkoutService extends IntentService {
      * parameters.
      */
     private void handleActionFetchPeakSpeeds(String workoutTag) {
-        if ((mWorkoutRepo != null) && (mWorkoutReceiver != null)) {
+        if ((mWorkoutRepo != null) && (mResultReceiver != null)) {
             Bundle bundle = new Bundle();
             mWorkoutRepo.getPeakSpeeds(); // blocking operation.
-            mWorkoutReceiver.onReceiveResult(0, bundle);
+            mResultReceiver.send(0, bundle);
         }
     }
 }

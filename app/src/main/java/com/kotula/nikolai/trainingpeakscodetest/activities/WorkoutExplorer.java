@@ -34,6 +34,8 @@ public class WorkoutExplorer extends AppCompatActivity
      */
     private ViewPager mViewPager;
 
+    private String mWorkoutTag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +55,8 @@ public class WorkoutExplorer extends AppCompatActivity
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+
+        mWorkoutTag = getIntent().getStringExtra(WorkoutSubmission.WORKOUT_TAG);
     }
 
     @Override
@@ -74,9 +78,9 @@ public class WorkoutExplorer extends AppCompatActivity
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
-                return PeakHeartRateFragment.newInstance(1);
+                return PeakHeartRateFragment.newInstance(mWorkoutTag);
             } else if (position == 1) {
-                return PeakSpeedFragment.newInstance(1);
+                return PeakSpeedFragment.newInstance(mWorkoutTag);
             }
 
             return null;
