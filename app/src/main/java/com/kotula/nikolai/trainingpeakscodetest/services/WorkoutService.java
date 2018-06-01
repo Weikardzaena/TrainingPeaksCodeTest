@@ -4,6 +4,10 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
 
+import com.kotula.nikolai.trainingpeakscodetest.repos.concrete.HttpWorkoutRESTClient;
+import com.kotula.nikolai.trainingpeakscodetest.repos.concrete.UnitTestWorkoutRepo;
+import com.kotula.nikolai.trainingpeakscodetest.repos.interfaces.IWorkoutRepo;
+
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
@@ -21,8 +25,19 @@ public class WorkoutService extends IntentService {
     private static final String EXTRA_PARAM1 = "com.kotula.nikolai.trainingpeakscodetest.services.extra.PARAM1";
     private static final String EXTRA_PARAM2 = "com.kotula.nikolai.trainingpeakscodetest.services.extra.PARAM2";
 
+    private IWorkoutRepo mWorkoutRepo;
+
     public WorkoutService() {
         super("WorkoutService");
+
+        // I REALLY wanted to use Dependency Injection here, but not having used DI in Android
+        // before, and with time constraints, I would rather just manually swap out the concrete
+        // classes here than spend the time to learn an entire library like Dagger.
+        //
+        // LET IT BE SAID that Dependency Injection is vastly superior to what I'm doing here, but
+        // for a simple one-off code test, this is fine.
+        mWorkoutRepo = new HttpWorkoutRESTClient();
+        //mWorkoutRepo = new UnitTestWorkoutRepo();
     }
 
     /**
