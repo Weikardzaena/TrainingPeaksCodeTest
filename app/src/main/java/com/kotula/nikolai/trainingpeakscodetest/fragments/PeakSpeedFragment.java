@@ -1,7 +1,12 @@
 package com.kotula.nikolai.trainingpeakscodetest.fragments;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LifecycleRegistry;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,6 +19,8 @@ import android.view.ViewGroup;
 import com.kotula.nikolai.trainingpeakscodetest.R;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.dummy.DummyContent;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.dummy.DummyContent.DummyItem;
+import com.kotula.nikolai.trainingpeakscodetest.models.HeartRateModel;
+import com.kotula.nikolai.trainingpeakscodetest.models.SpeedModel;
 
 import java.util.List;
 
@@ -23,15 +30,19 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class PeakSpeedFragment extends Fragment {
+public class PeakSpeedFragment extends Fragment implements LifecycleOwner {
 
     private static final String TAG = "PeakSpeedFragment";
+
+    private LifecycleRegistry mLifecycleRegistry;
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+
+    private SpeedModel mSpeedModel;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -51,8 +62,20 @@ public class PeakSpeedFragment extends Fragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mSpeedModel = ViewModelProviders.of(this).get(SpeedModel.class);
+
+        // Always remember to call init() on this after getting an instance from the view model providers!
+        mSpeedModel.init(getContext());
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mLifecycleRegistry = new LifecycleRegistry(this);
+        mLifecycleRegistry.markState(Lifecycle.State.CREATED);
 
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
@@ -90,6 +113,18 @@ public class PeakSpeedFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mLifecycleRegistry.markState(Lifecycle.State.RESUMED);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mLifecycleRegistry.markState(Lifecycle.State.STARTED);
     }
 
     @Override

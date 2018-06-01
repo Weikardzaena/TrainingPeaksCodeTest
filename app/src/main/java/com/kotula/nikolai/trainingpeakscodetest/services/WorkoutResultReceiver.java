@@ -9,9 +9,12 @@ import android.util.Log;
  * A simple wrapper around the {@link ResultReceiver} class to propagate result data to the model.
  */
 public class WorkoutResultReceiver extends ResultReceiver {
+
     private static final String TAG = "WorkoutResultsReceiver";
 
-    private IWorkoutReceiver mReciever;
+    public static final String WORKOUT_RESULTS_RECEIVER_TAG = "com.kotula.nikolai.trainingpeakscodetest.services.tag.WORKOUT_RESULTS_RECEIVER";
+
+    private IWorkoutReceiver mReceiver;
 
     /**
      * Public constructor
@@ -21,7 +24,7 @@ public class WorkoutResultReceiver extends ResultReceiver {
      */
     public WorkoutResultReceiver(Handler handler, IWorkoutReceiver receiver) {
         super(handler);
-        mReciever = receiver;
+        mReceiver = receiver;
     }
 
     /**
@@ -31,11 +34,19 @@ public class WorkoutResultReceiver extends ResultReceiver {
         public void onReceiveResult(int resultCode, Bundle resultData);
     }
 
+    public void removeReceiver() {
+        mReceiver = null;
+    }
+
+    public void setReceiver(IWorkoutReceiver receiver) {
+        mReceiver = receiver;
+    }
+
     @Override
     protected void onReceiveResult(int resultCode, Bundle resultData) {
-        if (mReciever != null) {
+        if (mReceiver != null) {
             Log.d(TAG, "onReceiveResult()");
-            mReciever.onReceiveResult(resultCode, resultData);
+            mReceiver.onReceiveResult(resultCode, resultData);
         }
     }
 }
