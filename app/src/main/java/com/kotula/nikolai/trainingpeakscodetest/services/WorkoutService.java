@@ -3,29 +3,24 @@ package com.kotula.nikolai.trainingpeakscodetest.services;
 import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
+import android.os.Bundle;
 
 import com.kotula.nikolai.trainingpeakscodetest.repos.concrete.HttpWorkoutRESTClient;
-import com.kotula.nikolai.trainingpeakscodetest.repos.concrete.UnitTestWorkoutRepo;
 import com.kotula.nikolai.trainingpeakscodetest.repos.interfaces.IWorkoutRepo;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
  * a service on a separate handler thread.
- * <p>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
  */
 public class WorkoutService extends IntentService {
-    // TODO: Rename actions, choose action names that describe tasks that this
-    // IntentService can perform, e.g. ACTION_FETCH_NEW_ITEMS
-    private static final String ACTION_FOO = "com.kotula.nikolai.trainingpeakscodetest.services.action.FOO";
-    private static final String ACTION_BAZ = "com.kotula.nikolai.trainingpeakscodetest.services.action.BAZ";
 
-    // TODO: Rename parameters
-    private static final String EXTRA_PARAM1 = "com.kotula.nikolai.trainingpeakscodetest.services.extra.PARAM1";
-    private static final String EXTRA_PARAM2 = "com.kotula.nikolai.trainingpeakscodetest.services.extra.PARAM2";
+    private static final String ACTION_FETCH_PEAK_HEART_RATES = "com.kotula.nikolai.trainingpeakscodetest.services.action.FETCH_PEAK_HEART_RATES";
+    private static final String ACTION_FETCH_PEAK_SPEEDS = "com.kotula.nikolai.trainingpeakscodetest.services.action.FETCH_PEAK_SPEEDS";
+
+    private static final String EXTRA_WORKOUT_TAG = "com.kotula.nikolai.trainingpeakscodetest.services.extra.WORKOUT_TAG";
 
     private IWorkoutRepo mWorkoutRepo;
+    private WorkoutResultReceiver mWorkoutReceiver;
 
     public WorkoutService() {
         super("WorkoutService");
@@ -47,11 +42,11 @@ public class WorkoutService extends IntentService {
      * @see IntentService
      */
     // TODO: Customize helper method
-    public static void startActionFoo(Context context, String param1, String param2) {
+    public static void startActionFetchPeakHeartRates(Context context, WorkoutResultReceiver receiver, String workoutTag) {
         Intent intent = new Intent(context, WorkoutService.class);
-        intent.setAction(ACTION_FOO);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
+        intent.setAction(ACTION_FETCH_PEAK_HEART_RATES);
+        intent.putExtra(EXTRA_WORKOUT_TAG, workoutTag);
+        intent.putExtra(WorkoutResultReceiver.WORKOUT_RESULTS_RECEIVER_TAG, receiver);
         context.startService(intent);
     }
 
@@ -62,45 +57,52 @@ public class WorkoutService extends IntentService {
      * @see IntentService
      */
     // TODO: Customize helper method
-    public static void startActionBaz(Context context, String param1, String param2) {
+    public static void startActionFetchPeakSpeeds(Context context, WorkoutResultReceiver receiver, String workoutTag) {
         Intent intent = new Intent(context, WorkoutService.class);
-        intent.setAction(ACTION_BAZ);
-        intent.putExtra(EXTRA_PARAM1, param1);
-        intent.putExtra(EXTRA_PARAM2, param2);
+        intent.setAction(ACTION_FETCH_PEAK_HEART_RATES);
+        intent.putExtra(EXTRA_WORKOUT_TAG, workoutTag);
+        intent.putExtra(WorkoutResultReceiver.WORKOUT_RESULTS_RECEIVER_TAG, receiver);
         context.startService(intent);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-            final String action = intent.getAction();
-            if (ACTION_FOO.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionFoo(param1, param2);
-            } else if (ACTION_BAZ.equals(action)) {
-                final String param1 = intent.getStringExtra(EXTRA_PARAM1);
-                final String param2 = intent.getStringExtra(EXTRA_PARAM2);
-                handleActionBaz(param1, param2);
+            mWorkoutReceiver = intent.getParcelableExtra(WorkoutResultReceiver.WORKOUT_RESULTS_RECEIVER_TAG);
+            if ((mWorkoutReceiver != null) && (mWorkoutRepo != null)) {
+                final String action = intent.getAction();
+                if (ACTION_FETCH_PEAK_HEART_RATES.equals(action)) {
+                    final String workoutTag = intent.getStringExtra(EXTRA_WORKOUT_TAG);
+                    handleActionFetchPeakHeartRates(workoutTag);
+                } else if (ACTION_FETCH_PEAK_SPEEDS.equals(action)) {
+                    final String workoutTag = intent.getStringExtra(EXTRA_WORKOUT_TAG);
+                    handleActionFetchPeakSpeeds(workoutTag);
+                }
             }
         }
     }
 
     /**
-     * Handle action Foo in the provided background thread with the provided
+     * Handle action Fetch_Peak_Heart_Rates in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionFoo(String param1, String param2) {
-        // TODO: Handle action Foo
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void handleActionFetchPeakHeartRates(String workoutTag) {
+        if ((mWorkoutRepo != null) && (mWorkoutReceiver != null)) {
+            Bundle bundle = new Bundle();
+            mWorkoutRepo.getPeakHeartRates(); // blocking operation.
+            mWorkoutReceiver.onReceiveResult(0, bundle);
+        }
     }
 
     /**
-     * Handle action Baz in the provided background thread with the provided
+     * Handle action Fetch_Peak_Speeds in the provided background thread with the provided
      * parameters.
      */
-    private void handleActionBaz(String param1, String param2) {
-        // TODO: Handle action Baz
-        throw new UnsupportedOperationException("Not yet implemented");
+    private void handleActionFetchPeakSpeeds(String workoutTag) {
+        if ((mWorkoutRepo != null) && (mWorkoutReceiver != null)) {
+            Bundle bundle = new Bundle();
+            mWorkoutRepo.getPeakSpeeds(); // blocking operation.
+            mWorkoutReceiver.onReceiveResult(0, bundle);
+        }
     }
 }
