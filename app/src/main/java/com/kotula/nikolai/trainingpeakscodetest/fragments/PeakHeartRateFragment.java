@@ -64,6 +64,8 @@ public class PeakHeartRateFragment extends Fragment implements LifecycleOwner {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        // Get the ViewModel for this fragment.
         mHeartRateModel = ViewModelProviders.of(this).get(HeartRateModel.class);
 
         // Always remember to call init() on this after getting an instance from the view model providers!
@@ -74,6 +76,7 @@ public class PeakHeartRateFragment extends Fragment implements LifecycleOwner {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // Register this fragment to trigger the ON_CREATE Lifecycle events for listeners:
         mLifecycleRegistry = new LifecycleRegistry(this);
         mLifecycleRegistry.markState(Lifecycle.State.CREATED);
 
@@ -123,6 +126,7 @@ public class PeakHeartRateFragment extends Fragment implements LifecycleOwner {
     @Override
     public void onPause() {
         super.onPause();
+        // Going from RESUMED to STARTED triggers the ON_PAUSED Lifecycle event.
         mLifecycleRegistry.markState(Lifecycle.State.STARTED);
     }
 

@@ -34,10 +34,22 @@ public class WorkoutResultReceiver extends ResultReceiver {
         public void onReceiveResult(int resultCode, Bundle resultData);
     }
 
+    /**
+     * Removes the reference to the receiver that will handle the onReceiveResult callback.
+     *
+     * This MUST be called whenever an activity or fragment moves into the PAUSED state to prevent
+     * leaks.
+     */
     public void removeReceiver() {
         mReceiver = null;
     }
 
+    /**
+     * Sets the reference to the receiver that will handle the onReceiveResult callback.
+     *
+     * This MUST be called whenever an activity or fragment moves into the RESUMED state to allow
+     * callbacks to work properly.
+     */
     public void setReceiver(IWorkoutReceiver receiver) {
         mReceiver = receiver;
     }
