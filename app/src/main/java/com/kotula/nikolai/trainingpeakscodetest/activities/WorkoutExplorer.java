@@ -1,8 +1,6 @@
 package com.kotula.nikolai.trainingpeakscodetest.activities;
 
 import android.support.design.widget.TabLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -11,15 +9,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
 
 import com.kotula.nikolai.trainingpeakscodetest.R;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakHeartRateFragment;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakSpeedFragment;
+import com.kotula.nikolai.trainingpeakscodetest.fragments.dummy.DummyContent;
 
-public class WorkoutExplorer extends AppCompatActivity {
+public class WorkoutExplorer extends AppCompatActivity
+                             implements PeakHeartRateFragment.OnListFragmentInteractionListener,
+                                        PeakSpeedFragment.OnListFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -57,6 +55,12 @@ public class WorkoutExplorer extends AppCompatActivity {
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
     }
 
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem dummyItem)
+    {
+        // For now, do nothing.
+    }
+
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
      * one of the sections/tabs/pages.
@@ -80,8 +84,8 @@ public class WorkoutExplorer extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 3;
+            // Show 2 total pages.
+            return 2;
         }
     }
 }
