@@ -19,7 +19,9 @@ public class UnitTestWorkoutRepo implements IWorkoutRepo {
     @Override
     public List<PeakHeartRate> getPeakHeartRates() {
         Log.d(TAG, "getPeakHeartRates()");
-        return new ArrayList<PeakHeartRate>();
+        ArrayList<PeakHeartRate> heartRates = new ArrayList<PeakHeartRate>();
+        heartRates.add(new PeakHeartRate(10, 0, 0, 0));
+        return heartRates;
     }
 
     /**
@@ -29,6 +31,8 @@ public class UnitTestWorkoutRepo implements IWorkoutRepo {
     @Override
     public List<PeakSpeed> getPeakSpeeds() {
         Log.d(TAG, "getPeakSpeeds()");
-        return new ArrayList<PeakSpeed>();
+        ArrayList<PeakSpeed> speeds = new ArrayList<PeakSpeed>();
+        speeds.add(new PeakSpeed(10, 0, 0, 0));
+        return speeds;
     }
 }

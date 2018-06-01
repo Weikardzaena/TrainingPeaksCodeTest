@@ -4,10 +4,18 @@ import android.app.IntentService;
 import android.content.Intent;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.os.ResultReceiver;
 
+import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
+import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
 import com.kotula.nikolai.trainingpeakscodetest.repos.concrete.HttpWorkoutRESTClient;
+import com.kotula.nikolai.trainingpeakscodetest.repos.concrete.UnitTestWorkoutRepo;
 import com.kotula.nikolai.trainingpeakscodetest.repos.interfaces.IWorkoutRepo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -32,8 +40,8 @@ public class WorkoutService extends IntentService {
         //
         // LET IT BE SAID that Dependency Injection is vastly superior to what I'm doing here, but
         // for a simple one-off code test, this is fine.
-        mWorkoutRepo = new HttpWorkoutRESTClient();
-        //mWorkoutRepo = new UnitTestWorkoutRepo();
+        //mWorkoutRepo = new HttpWorkoutRESTClient();
+        mWorkoutRepo = new UnitTestWorkoutRepo();
     }
 
     /**
@@ -90,7 +98,8 @@ public class WorkoutService extends IntentService {
     private void handleActionFetchPeakHeartRates(String workoutTag) {
         if ((mWorkoutRepo != null) && (mResultReceiver != null)) {
             Bundle bundle = new Bundle();
-            mWorkoutRepo.getPeakHeartRates(); // blocking operation.
+            List<PeakHeartRate> peakHeartRates = mWorkoutRepo.getPeakHeartRates();
+            bundle.putParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE, new ArrayList<Parcelable>(peakHeartRates));
             mResultReceiver.send(0, bundle);
         }
     }
@@ -102,7 +111,8 @@ public class WorkoutService extends IntentService {
     private void handleActionFetchPeakSpeeds(String workoutTag) {
         if ((mWorkoutRepo != null) && (mResultReceiver != null)) {
             Bundle bundle = new Bundle();
-            mWorkoutRepo.getPeakSpeeds(); // blocking operation.
+            List<PeakHeartRate> peakHeartRates = mWorkoutRepo.getPeakHeartRates();
+            bundle.putParcelableArrayList(PeakSpeed.PARCEL_PEAK_SPEED, new ArrayList<Parcelable>(peakHeartRates));
             mResultReceiver.send(0, bundle);
         }
     }

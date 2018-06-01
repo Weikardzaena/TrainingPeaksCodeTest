@@ -10,8 +10,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
+import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
 import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutResultReceiver;
 import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutService;
+
+import java.util.ArrayList;
 
 /**
  * {@link ViewModel} Implementation which acts as the model for fetching Workout data.
@@ -47,6 +50,14 @@ public class HeartRateModel extends ViewModel implements WorkoutResultReceiver.I
      */
     public void onReceiveResult(int resultCode, Bundle resultData) {
         Log.d(TAG, "onReceiveResult()");
+        ArrayList<PeakHeartRate> heartRates = resultData.getParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE);
+        if (heartRates != null) {
+            for (PeakHeartRate heartRate : heartRates) {
+                if (heartRate != null) {
+                    Log.d(TAG, Long.toString(heartRate.getBegin()));
+                }
+            }
+        }
     }
 
     /**

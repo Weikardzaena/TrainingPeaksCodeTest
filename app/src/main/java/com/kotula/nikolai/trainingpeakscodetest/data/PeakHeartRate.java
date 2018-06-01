@@ -1,9 +1,14 @@
 package com.kotula.nikolai.trainingpeakscodetest.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Immutable POJO for encapsulating the Peak Heart Rate data from the Workout REST result.
  */
-public class PeakHeartRate {
+public class PeakHeartRate implements Parcelable {
+    public static final String PARCEL_PEAK_HEART_RATE = "com.kotula.nikolai.trainingpeakscodetest.data.PEAK_HEART_RATE";
+
     private long begin;
     private long end;
     private int interval;
@@ -34,5 +39,38 @@ public class PeakHeartRate {
         this.end = end;
         this.interval = interval;
         this.value = value;
+    }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(begin);
+        dest.writeLong(end);
+        dest.writeInt(interval);
+        dest.writeInt(value);
+    }
+
+    public static final Parcelable.Creator<PeakHeartRate> CREATOR =
+            new Parcelable.Creator<PeakHeartRate>() {
+                public PeakHeartRate createFromParcel(Parcel in) {
+                    return new PeakHeartRate(in);
+                }
+
+                @Override
+                public PeakHeartRate[] newArray(int size) {
+                    return new PeakHeartRate[size];
+                }
+            };
+
+    private PeakHeartRate(Parcel in) {
+        begin = in.readLong();
+        end = in.readLong();
+        interval = in.readInt();
+        value = in.readInt();
     }
 }

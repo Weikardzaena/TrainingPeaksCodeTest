@@ -10,8 +10,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
+import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
+import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
 import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutResultReceiver;
 import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutService;
+
+import java.util.ArrayList;
 
 /**
  * {@link ViewModel} Implementation which acts as the model for fetching Workout data.
@@ -37,7 +41,7 @@ public class SpeedModel extends ViewModel implements WorkoutResultReceiver.IWork
      * @param workoutTag The Workout Tag to fetch from the data source.
      */
     public void updatePeakSpeeds(String workoutTag) {
-        WorkoutService.startActionFetchPeakHeartRates(mContext, mResultReceiver, workoutTag);
+        WorkoutService.startActionFetchPeakSpeeds(mContext, mResultReceiver, workoutTag);
     }
 
     /**
@@ -47,6 +51,14 @@ public class SpeedModel extends ViewModel implements WorkoutResultReceiver.IWork
      */
     public void onReceiveResult(int resultCode, Bundle resultData) {
         Log.d(TAG, "onReceiveResult()");
+        ArrayList<PeakSpeed> speeds = resultData.getParcelableArrayList(PeakSpeed.PARCEL_PEAK_SPEED);
+        if (speeds != null) {
+            for (PeakSpeed speed : speeds) {
+                if (speed != null) {
+                    Log.d(TAG, Long.toString(speed.getBegin()));
+                }
+            }
+        }
     }
 
     /**
