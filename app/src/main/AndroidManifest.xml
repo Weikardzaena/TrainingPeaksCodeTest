@@ -16,7 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.WorkoutExplorer"></activity>
+        <activity android:name=".activities.WorkoutExplorer" />
+
+        <service
+            android:name=".services.WorkoutService"
+            android:exported="false"></service>
     </application>
 
 </manifest>
