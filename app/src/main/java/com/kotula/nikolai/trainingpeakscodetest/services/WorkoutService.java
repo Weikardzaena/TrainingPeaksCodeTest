@@ -68,7 +68,7 @@ public class WorkoutService extends IntentService {
     // TODO: Customize helper method
     public static void startActionFetchPeakSpeeds(Context context, WorkoutResultReceiver receiver, String workoutTag) {
         Intent intent = new Intent(context, WorkoutService.class);
-        intent.setAction(ACTION_FETCH_PEAK_HEART_RATES);
+        intent.setAction(ACTION_FETCH_PEAK_SPEEDS);
         intent.putExtra(EXTRA_WORKOUT_TAG, workoutTag);
         intent.putExtra(WorkoutResultReceiver.WORKOUT_RESULTS_RECEIVER_TAG, receiver);
         context.startService(intent);
@@ -111,8 +111,8 @@ public class WorkoutService extends IntentService {
     private void handleActionFetchPeakSpeeds(String workoutTag) {
         if ((mWorkoutRepo != null) && (mResultReceiver != null)) {
             Bundle bundle = new Bundle();
-            List<PeakHeartRate> peakHeartRates = mWorkoutRepo.getPeakHeartRates();
-            bundle.putParcelableArrayList(PeakSpeed.PARCEL_PEAK_SPEED, new ArrayList<Parcelable>(peakHeartRates));
+            List<PeakSpeed> peakSpeeds = mWorkoutRepo.getPeakSpeeds();
+            bundle.putParcelableArrayList(PeakSpeed.PARCEL_PEAK_SPEED, new ArrayList<Parcelable>(peakSpeeds));
             mResultReceiver.send(0, bundle);
         }
     }

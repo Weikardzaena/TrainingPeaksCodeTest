@@ -32,7 +32,7 @@ public class UnitTestWorkoutRepo implements IWorkoutRepo {
     public List<PeakSpeed> getPeakSpeeds() {
         Log.d(TAG, "getPeakSpeeds()");
         ArrayList<PeakSpeed> speeds = new ArrayList<PeakSpeed>();
-        speeds.add(new PeakSpeed(10, 0, 0, 0));
+        speeds.add(new PeakSpeed(1, 0, 0, 0));
         return speeds;
     }
 }
