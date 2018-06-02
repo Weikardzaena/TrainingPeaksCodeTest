@@ -54,7 +54,7 @@ public class HeartRateModel extends ViewModel implements WorkoutResultReceiver.I
         if (heartRates != null) {
             for (PeakHeartRate heartRate : heartRates) {
                 if (heartRate != null) {
-                    Log.d(TAG, Long.toString(heartRate.getBegin()));
+                    Log.d(TAG, heartRate.toString());
                 }
             }
         }

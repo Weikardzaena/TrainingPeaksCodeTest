@@ -54,7 +54,7 @@ public class SpeedModel extends ViewModel implements WorkoutResultReceiver.IWork
         if (speeds != null) {
             for (PeakSpeed speed : speeds) {
                 if (speed != null) {
-                    Log.d(TAG, Long.toString(speed.getBegin()));
+                    Log.d(TAG, speed.toString());
                 }
             }
         }

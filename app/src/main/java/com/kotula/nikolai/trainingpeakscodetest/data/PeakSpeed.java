@@ -72,4 +72,32 @@ public class PeakSpeed implements Parcelable {
         interval = in.readInt();
         value = in.readDouble();
     }
+
+    @Override
+    public String toString() {
+        final String lineSeparator = System.getProperty("line.separator");
+
+        StringBuilder builder = new StringBuilder();
+        builder.append("Peak Speed:");
+        builder.append(lineSeparator);
+        builder.append(lineSeparator);
+
+        builder.append("begin: ");
+        builder.append(begin);
+        builder.append(lineSeparator);
+
+        builder.append("end: ");
+        builder.append(end);
+        builder.append(lineSeparator);
+
+        builder.append("interval: ");
+        builder.append(interval);
+        builder.append(lineSeparator);
+
+        builder.append("value: ");
+        builder.append(value);
+        builder.append(lineSeparator);
+
+        return builder.toString();
+    }
 }
