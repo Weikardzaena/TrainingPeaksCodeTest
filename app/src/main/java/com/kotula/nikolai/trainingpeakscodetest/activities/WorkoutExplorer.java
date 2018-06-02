@@ -1,26 +1,95 @@
 package com.kotula.nikolai.trainingpeakscodetest.activities;
 
-import android.content.Intent;
+import android.support.design.widget.TabLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.kotula.nikolai.trainingpeakscodetest.R;
+import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakHeartRateFragment;
+import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakSpeedFragment;
+import com.kotula.nikolai.trainingpeakscodetest.fragments.dummy.DummyContent;
 
-public class WorkoutExplorer extends AppCompatActivity {
-    private static final String TAG = "WorkoutExplorer";
+public class WorkoutExplorer extends AppCompatActivity
+                             implements PeakHeartRateFragment.OnListFragmentInteractionListener,
+                                        PeakSpeedFragment.OnListFragmentInteractionListener {
+
+    /**
+     * The {@link android.support.v4.view.PagerAdapter} that will provide
+     * fragments for each of the sections. We use a
+     * {@link FragmentPagerAdapter} derivative, which will keep every
+     * loaded fragment in memory. If this becomes too memory intensive, it
+     * may be best to switch to a
+     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     */
+    private SectionsPagerAdapter mSectionsPagerAdapter;
+
+    /**
+     * The {@link ViewPager} that will host the section contents.
+     */
+    private ViewPager mViewPager;
+
+    private String mWorkoutTag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workout_explorer);
 
-        Intent intent = getIntent();
-        String workoutTag = intent.getStringExtra(WorkoutSubmission.WORKOUT_TAG);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        // Create the adapter that will return a fragment for each of the three
+        // primary sections of the activity.
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        if (workoutTag != null)
-            Log.d(TAG, workoutTag);
-        else
-            Log.d(TAG, "No workout tag!");
+        // Set up the ViewPager with the sections adapter.
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+        tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
+
+        mWorkoutTag = getIntent().getStringExtra(WorkoutSubmission.WORKOUT_TAG);
+    }
+
+    @Override
+    public void onListFragmentInteraction(DummyContent.DummyItem dummyItem)
+    {
+        // For now, do nothing.
+    }
+
+    /**
+     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
+     * one of the sections/tabs/pages.
+     */
+    public class SectionsPagerAdapter extends FragmentPagerAdapter {
+
+        public SectionsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            if (position == 0) {
+                return PeakHeartRateFragment.newInstance(mWorkoutTag);
+            } else if (position == 1) {
+                return PeakSpeedFragment.newInstance(mWorkoutTag);
+            }
+
+            return null;
+        }
+
+        @Override
+        public int getCount() {
+            // Show 2 total pages.
+            return 2;
+        }
     }
 }
