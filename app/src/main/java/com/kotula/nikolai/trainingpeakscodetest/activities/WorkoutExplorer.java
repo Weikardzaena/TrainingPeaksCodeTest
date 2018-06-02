@@ -85,8 +85,10 @@ public class WorkoutExplorer extends AppCompatActivity
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
+                // TODO:  Verify null String is handled gracefully
                 return PeakHeartRateFragment.newInstance(mWorkoutTag);
             } else if (position == 1) {
+                // TODO:  Verify null String is handled gracefully
                 return PeakSpeedFragment.newInstance(mWorkoutTag);
             }
 

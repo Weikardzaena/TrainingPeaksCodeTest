@@ -57,6 +57,7 @@ public class SpeedModel extends PeakModel<PeakSpeed> implements WorkoutResultRec
      */
     @Override
     public LiveData<List<PeakSpeed>> getData(String workoutTag) {
+        // TODO:  Verify null String is handled gracefully
         WorkoutService.startActionFetchPeakSpeeds(mContext, mResultReceiver, workoutTag);
         return mData;
     }

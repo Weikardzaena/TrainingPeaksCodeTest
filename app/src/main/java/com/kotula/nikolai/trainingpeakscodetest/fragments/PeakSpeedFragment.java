@@ -101,6 +101,7 @@ public class PeakSpeedFragment extends Fragment implements LifecycleOwner {
             if (getArguments() != null) {
                 workoutTag = getArguments().getString(WorkoutSubmission.WORKOUT_TAG);
             }
+            // TODO:  Verify null String is handled gracefully
             mSpeedModel.getData(workoutTag).observe(this, liveDataObserver);
         }
         return view;
