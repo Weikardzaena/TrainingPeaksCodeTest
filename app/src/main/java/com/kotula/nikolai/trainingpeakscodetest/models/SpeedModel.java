@@ -13,6 +13,7 @@ import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutService;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -32,8 +33,11 @@ public class SpeedModel extends PeakModel<PeakSpeed> implements WorkoutResultRec
         Log.d(TAG, "onReceiveResult()");
         ArrayList<PeakSpeed> peakSpeeds = resultData.getParcelableArrayList(PeakSpeed.PARCEL_PEAK_SPEED);
         if (peakSpeeds != null) {
-            Collections.sort(peakSpeeds, new PeakSpeedComparator());
-            mData.setValue(peakSpeeds);
+            ArrayList<PeakSpeed> trimmedSpeeds = new ArrayList<>(new HashSet<>(peakSpeeds));
+
+            // Always sort AFTER the Hash Set because of ordering and for slight performance gains.
+            Collections.sort(trimmedSpeeds, new PeakSpeedComparator());
+            mData.setValue(trimmedSpeeds);
         }
     }
 

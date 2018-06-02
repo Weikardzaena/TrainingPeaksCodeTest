@@ -18,6 +18,7 @@ import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutService;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -37,8 +38,12 @@ public class HeartRateModel extends PeakModel<PeakHeartRate> implements WorkoutR
         Log.d(TAG, "onReceiveResult()");
         ArrayList<PeakHeartRate> heartRates = resultData.getParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE);
         if (heartRates != null) {
-            Collections.sort(heartRates, new PeakHeartRateComparator());
-            mData.setValue(heartRates);
+            ArrayList<PeakHeartRate> trimmedVals = new ArrayList<>(new HashSet<>(heartRates));
+
+            // Always sort AFTER the Hash Set because of ordering and for slight performance gains.
+            Collections.sort(trimmedVals, new PeakHeartRateComparator());
+
+            mData.setValue(trimmedVals);
         }
     }
 
