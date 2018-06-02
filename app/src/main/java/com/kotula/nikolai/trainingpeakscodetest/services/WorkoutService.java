@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.ResultReceiver;
+import android.util.Log;
 
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
@@ -23,6 +24,7 @@ import java.util.List;
  */
 public class WorkoutService extends IntentService {
 
+    private static final String TAG = "WorkoutService";
     private static final String ACTION_FETCH_PEAK_HEART_RATES = "com.kotula.nikolai.trainingpeakscodetest.services.action.FETCH_PEAK_HEART_RATES";
     private static final String ACTION_FETCH_PEAK_SPEEDS = "com.kotula.nikolai.trainingpeakscodetest.services.action.FETCH_PEAK_SPEEDS";
 
@@ -40,8 +42,8 @@ public class WorkoutService extends IntentService {
         //
         // LET IT BE SAID that Dependency Injection is vastly superior to what I'm doing here, but
         // for a simple one-off code test, this is fine.
-        //mWorkoutRepo = new HttpWorkoutRESTClient();
-        mWorkoutRepo = new UnitTestWorkoutRepo();
+        mWorkoutRepo = new HttpWorkoutRESTClient();
+        //mWorkoutRepo = new UnitTestWorkoutRepo();
     }
 
     /**
@@ -98,8 +100,14 @@ public class WorkoutService extends IntentService {
     private void handleActionFetchPeakHeartRates(String workoutTag) {
         if ((mWorkoutRepo != null) && (mResultReceiver != null)) {
             Bundle bundle = new Bundle();
-            List<PeakHeartRate> peakHeartRates = mWorkoutRepo.getPeakHeartRates();
-            bundle.putParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE, new ArrayList<Parcelable>(peakHeartRates));
+            List<PeakHeartRate> peakHeartRates = mWorkoutRepo.getPeakHeartRates(workoutTag);
+
+            if (peakHeartRates != null) {
+                bundle.putParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE, new ArrayList<Parcelable>(peakHeartRates));
+            } else {
+                Log.e(TAG, "Something went wrong with fetching the data!");
+            }
+
             mResultReceiver.send(0, bundle);
         }
     }
@@ -111,8 +119,14 @@ public class WorkoutService extends IntentService {
     private void handleActionFetchPeakSpeeds(String workoutTag) {
         if ((mWorkoutRepo != null) && (mResultReceiver != null)) {
             Bundle bundle = new Bundle();
-            List<PeakSpeed> peakSpeeds = mWorkoutRepo.getPeakSpeeds();
-            bundle.putParcelableArrayList(PeakSpeed.PARCEL_PEAK_SPEED, new ArrayList<Parcelable>(peakSpeeds));
+            List<PeakSpeed> peakSpeeds = mWorkoutRepo.getPeakSpeeds(workoutTag);
+
+            if (peakSpeeds != null) {
+                bundle.putParcelableArrayList(PeakSpeed.PARCEL_PEAK_SPEED, new ArrayList<Parcelable>(peakSpeeds));
+            } else {
+                Log.e(TAG, "Something went wrong with fetching the data!");
+            }
+
             mResultReceiver.send(0, bundle);
         }
     }

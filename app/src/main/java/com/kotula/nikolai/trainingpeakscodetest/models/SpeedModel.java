@@ -10,7 +10,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 
-import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
 import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutResultReceiver;
 import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutService;

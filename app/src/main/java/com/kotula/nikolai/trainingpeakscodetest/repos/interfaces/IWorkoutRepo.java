@@ -11,13 +11,15 @@ import java.util.List;
 public interface IWorkoutRepo {
     /**
      * Fetches a {@link List} of {@link PeakSpeed} objects from the data source.
+     * @param workoutTag The Workout Tag to fetch from the endpoint.
      * @return The {@link List} of {@link PeakSpeed} objects from the data source.
      */
-    public List<PeakSpeed> getPeakSpeeds();
+    public List<PeakSpeed> getPeakSpeeds(String workoutTag);
 
     /**
      * Fetches a {@link List} of {@link PeakHeartRate} objects from the data source.
+     * @param workoutTag The Workout Tag to fetch from the endpoint.
      * @return The {@link List} of {@link PeakHeartRate} objects from the data source.
      */
-    public List<PeakHeartRate> getPeakHeartRates();
+    public List<PeakHeartRate> getPeakHeartRates(String workoutTag);
 }
