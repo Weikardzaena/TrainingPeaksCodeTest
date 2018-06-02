@@ -2,6 +2,7 @@ package com.kotula.nikolai.trainingpeakscodetest.fragments;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,8 +48,8 @@ public class PeakSpeedRecyclerViewAdapter extends RecyclerView.Adapter<PeakSpeed
         // NOTE That this assumes a non-null POJO instance, and it is up to the DATA SOURCE to
         //      ensure the list of POJOs contains no null references.
         holder.peakSpeed = mValues.get(position);
-        holder.intervalView.setText(String.valueOf(mValues.get(position).getInterval()));
-        holder.valueView.setText(String.format(Locale.getDefault(), "%.2f", mValues.get(position).getValue()));
+        holder.intervalView.setText(buildIntervalString(mValues.get(position).getInterval()));
+        holder.valueView.setText(formattedTimeFromDouble(mValues.get(position).getValue()));
         holder.unitView.setText(R.string.lbl_min_per_mile);
 
         holder.view.setOnClickListener(new View.OnClickListener() {
@@ -61,6 +62,43 @@ public class PeakSpeedRecyclerViewAdapter extends RecyclerView.Adapter<PeakSpeed
                 }
             }
         });
+    }
+
+    @NonNull
+    private String buildIntervalString(int interval) {
+        // Populate relevant values first:
+        int minutes = interval / 60;
+        int hours = minutes / 60;
+        int seconds = interval % 60;
+
+
+        if (hours > 0) {
+            // If we have hours, deal with that case first:
+            if ((seconds == 0) && (minutes == 0))
+                return String.format(Locale.getDefault(), "%d hr", hours);
+            else
+                return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
+        } else if (minutes > 0) {
+            // We don't have hours, but we have minutes:
+            if (seconds == 0)
+                return String.format(Locale.getDefault(), "%d min", minutes);
+            else
+                return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+        } else {
+            // Only seconds:
+            return String.format(Locale.getDefault(), "%d sec", seconds);
+        }
+    }
+
+    @NonNull
+    private String formattedTimeFromDouble(double minutes) {
+        // We're guaranteeing NonNull, so we have to account for invalid double cases.
+        if (Double.isInfinite(minutes) || Double.isNaN(minutes)) {
+            return "INF";
+        } else {
+            // double % 1 gives you the fraction of the double, and so <value> - (<value> % 1) gives the minutes:
+            return String.format(Locale.getDefault(), "%02.0f:%02.0f", minutes - (minutes % 1), (minutes % 1) * 60);
+        }
     }
 
     @Override

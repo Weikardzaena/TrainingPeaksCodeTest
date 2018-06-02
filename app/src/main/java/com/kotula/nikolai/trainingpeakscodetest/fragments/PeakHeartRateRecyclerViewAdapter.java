@@ -13,6 +13,7 @@ import com.kotula.nikolai.trainingpeakscodetest.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link PeakHeartRate} entry and makes a call to the
@@ -47,7 +48,7 @@ public class PeakHeartRateRecyclerViewAdapter extends RecyclerView.Adapter<PeakH
         // NOTE That this assumes a non-null POJO instance, and it is up to the DATA SOURCE to
         //      ensure the list of POJOs contains no null references.
         holder.peakHeartRate = mValues.get(position);
-        holder.intervalView.setText(String.valueOf(mValues.get(position).getInterval()));
+        holder.intervalView.setText(buildIntervalString(mValues.get(position).getInterval()));
         holder.valueView.setText(String.valueOf(mValues.get(position).getValue()));
         holder.unitView.setText(R.string.lbl_bpm);
 
@@ -61,6 +62,31 @@ public class PeakHeartRateRecyclerViewAdapter extends RecyclerView.Adapter<PeakH
                 }
             }
         });
+    }
+    @NonNull
+    private String buildIntervalString(int interval) {
+        // Populate relevant values first:
+        int minutes = interval / 60;
+        int hours = minutes / 60;
+        int seconds = interval % 60;
+
+
+        if (hours > 0) {
+            // If we have hours, deal with that case first:
+            if ((seconds == 0) && (minutes == 0))
+                return String.format(Locale.getDefault(), "%d hr", hours);
+            else
+                return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
+        } else if (minutes > 0) {
+            // We don't have hours, but we have minutes:
+            if (seconds == 0)
+                return String.format(Locale.getDefault(), "%d min", minutes);
+            else
+                return String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+        } else {
+            // Only seconds:
+            return String.format(Locale.getDefault(), "%d sec", seconds);
+        }
     }
 
     @Override
