@@ -7,10 +7,12 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
+import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeedComparator;
 import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutResultReceiver;
 import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -30,6 +32,7 @@ public class SpeedModel extends PeakModel<PeakSpeed> implements WorkoutResultRec
         Log.d(TAG, "onReceiveResult()");
         ArrayList<PeakSpeed> peakSpeeds = resultData.getParcelableArrayList(PeakSpeed.PARCEL_PEAK_SPEED);
         if (peakSpeeds != null) {
+            Collections.sort(peakSpeeds, new PeakSpeedComparator());
             mData.setValue(peakSpeeds);
         }
     }

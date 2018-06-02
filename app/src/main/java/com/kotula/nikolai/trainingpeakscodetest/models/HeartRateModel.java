@@ -12,10 +12,12 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
+import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRateComparator;
 import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutResultReceiver;
 import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutService;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,6 +37,7 @@ public class HeartRateModel extends PeakModel<PeakHeartRate> implements WorkoutR
         Log.d(TAG, "onReceiveResult()");
         ArrayList<PeakHeartRate> heartRates = resultData.getParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE);
         if (heartRates != null) {
+            Collections.sort(heartRates, new PeakHeartRateComparator());
             mData.setValue(heartRates);
         }
     }
