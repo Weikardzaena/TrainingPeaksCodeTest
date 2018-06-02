@@ -7,6 +7,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
@@ -23,7 +24,7 @@ import com.kotula.nikolai.trainingpeakscodetest.models.HeartRateModel;
 import java.util.List;
 
 /**
- * A fragment representing a list of Items.
+ * A fragment representing a list of Peak Heart Rate entries.
  * <p/>
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
@@ -44,7 +45,6 @@ public class PeakHeartRateFragment extends Fragment implements LifecycleOwner {
     public PeakHeartRateFragment() {
     }
 
-    // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
     public static PeakHeartRateFragment newInstance(String workoutTag) {
         PeakHeartRateFragment fragment = new PeakHeartRateFragment();
@@ -75,7 +75,7 @@ public class PeakHeartRateFragment extends Fragment implements LifecycleOwner {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_peakheartrate_list, container, false);
 

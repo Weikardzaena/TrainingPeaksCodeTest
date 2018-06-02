@@ -15,7 +15,6 @@ import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakHeartRateFragment;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakSpeedFragment;
-import com.kotula.nikolai.trainingpeakscodetest.fragments.dummy.DummyContent;
 
 public class WorkoutExplorer extends AppCompatActivity
                              implements PeakHeartRateFragment.OnListFragmentInteractionListener,
@@ -43,14 +42,14 @@ public class WorkoutExplorer extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workout_explorer);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -79,7 +78,7 @@ public class WorkoutExplorer extends AppCompatActivity
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 

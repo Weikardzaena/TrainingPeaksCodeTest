@@ -24,6 +24,10 @@ public class WorkoutSubmission extends AppCompatActivity {
         mWorkoutTagText = findViewById(R.id.editText_workoutTag);
     }
 
+    /**
+     * Button handler for the "Get Workout" button.
+     * @param view The Button view.
+     */
     public void getWorkout(View view) {
 
         // Don't continue if something went wrong with the layout:

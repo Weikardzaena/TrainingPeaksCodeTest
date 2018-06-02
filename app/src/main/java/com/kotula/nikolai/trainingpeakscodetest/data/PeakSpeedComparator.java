@@ -2,6 +2,9 @@ package com.kotula.nikolai.trainingpeakscodetest.data;
 
 import java.util.Comparator;
 
+/**
+ * A {@link Comparator} wrapper class for the {@link PeakSpeed} POJO.
+ */
 public class PeakSpeedComparator implements Comparator<PeakSpeed> {
     @Override
     public int compare(PeakSpeed o1, PeakSpeed o2) {

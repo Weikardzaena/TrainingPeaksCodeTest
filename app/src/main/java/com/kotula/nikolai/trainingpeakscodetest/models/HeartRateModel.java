@@ -32,6 +32,11 @@ public class HeartRateModel extends PeakModel<PeakHeartRate> implements WorkoutR
     public void onReceiveResult(int resultCode, Bundle resultData) {
         Log.d(TAG, "onReceiveResult()");
         ArrayList<PeakHeartRate> heartRates = resultData.getParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE);
+
+        // The following set of logic to remove duplicates and sort the array is not optimized, but
+        // considering that this is at the tail end of a comparatively very time-consuming operation
+        // of fetching and parsing the data from a REST endpoint, the performance gains of
+        // optimizing this logic is not worth the time.
         if (heartRates != null) {
             // Remove duplicates by adding everything to a Set:
             ArrayList<PeakHeartRate> trimmedVals = new ArrayList<>(new HashSet<>(heartRates));
@@ -39,7 +44,7 @@ public class HeartRateModel extends PeakModel<PeakHeartRate> implements WorkoutR
             // If a null value remains, remove it.
             trimmedVals.remove(null);
 
-            // Always sort AFTER the Hash Set because of ordering and for slight performance gains.
+            // Always sort AFTER the Hash Set because of ordering.
             Collections.sort(trimmedVals, new PeakHeartRateComparator());
 
             mData.setValue(trimmedVals);

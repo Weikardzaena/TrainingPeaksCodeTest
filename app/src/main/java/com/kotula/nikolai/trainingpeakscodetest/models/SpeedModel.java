@@ -32,6 +32,11 @@ public class SpeedModel extends PeakModel<PeakSpeed> implements WorkoutResultRec
     public void onReceiveResult(int resultCode, Bundle resultData) {
         Log.d(TAG, "onReceiveResult()");
         ArrayList<PeakSpeed> peakSpeeds = resultData.getParcelableArrayList(PeakSpeed.PARCEL_PEAK_SPEED);
+
+        // The following set of logic to remove duplicates and sort the array is not optimized, but
+        // considering that this is at the tail end of a comparatively very time-consuming operation
+        // of fetching and parsing the data from a REST endpoint, the performance gains of
+        // optimizing this logic is not worth the time.
         if (peakSpeeds != null) {
             // Remove duplicates by adding everything to a Set:
             ArrayList<PeakSpeed> trimmedSpeeds = new ArrayList<>(new HashSet<>(peakSpeeds));
@@ -39,7 +44,7 @@ public class SpeedModel extends PeakModel<PeakSpeed> implements WorkoutResultRec
             // If a null value remains, remove it.
             trimmedSpeeds.remove(null);
 
-            // Always sort AFTER the Hash Set because of ordering and for slight performance gains.
+            // Always sort AFTER the Hash Set because of ordering.
             Collections.sort(trimmedSpeeds, new PeakSpeedComparator());
 
             mData.setValue(trimmedSpeeds);

@@ -9,23 +9,21 @@ import android.widget.TextView;
 
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakHeartRateFragment.OnListFragmentInteractionListener;
-import com.kotula.nikolai.trainingpeakscodetest.fragments.dummy.DummyContent.DummyItem;
 import com.kotula.nikolai.trainingpeakscodetest.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link PeakHeartRate} entry and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
- * TODO: Replace the implementation with code for your data type.
  */
 public class PeakHeartRateRecyclerViewAdapter extends RecyclerView.Adapter<PeakHeartRateRecyclerViewAdapter.ViewHolder> {
 
     private final List<PeakHeartRate> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public PeakHeartRateRecyclerViewAdapter(List<PeakHeartRate> items, OnListFragmentInteractionListener listener) {
+    PeakHeartRateRecyclerViewAdapter(List<PeakHeartRate> items, OnListFragmentInteractionListener listener) {
         if (items != null) {
             mValues = items;
         } else {
@@ -45,6 +43,9 @@ public class PeakHeartRateRecyclerViewAdapter extends RecyclerView.Adapter<PeakH
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
+        // Populate the values from the POJO.
+        // NOTE That this assumes a non-null POJO instance, and it is up to the DATA SOURCE to
+        //      ensure the list of POJOs contains no null references.
         holder.peakHeartRate = mValues.get(position);
         holder.intervalView.setText(String.valueOf(mValues.get(position).getInterval()));
         holder.valueView.setText(String.valueOf(mValues.get(position).getValue()));
@@ -69,12 +70,12 @@ public class PeakHeartRateRecyclerViewAdapter extends RecyclerView.Adapter<PeakH
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View view;
-        public final TextView intervalView;
-        public final TextView valueView;
-        public final TextView unitView;
+        final TextView intervalView;
+        final TextView valueView;
+        final TextView unitView;
         public PeakHeartRate peakHeartRate;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             this.view = view;
             intervalView = view.findViewById(R.id.interval_peak);
