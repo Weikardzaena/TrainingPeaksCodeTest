@@ -101,7 +101,7 @@ public class PeakHeartRateFragment extends Fragment implements LifecycleOwner {
             if (getArguments() != null) {
                 workoutTag = getArguments().getString(WorkoutSubmission.WORKOUT_TAG);
             }
-            mHeartRateModel.getPeakHeartRates(workoutTag).observe(this, liveDataObserver);
+            mHeartRateModel.getData(workoutTag).observe(this, liveDataObserver);
         }
         return view;
     }
