@@ -56,75 +56,99 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
         return mPeakSpeeds;
     }
 
+    /**
+     * Parses the entire JSON document for Peak Heart Rates and Peak Speeds.
+     * <p>
+     *     NOTE:  This method assumes that the reader is at a valid starting position.  I.E.
+     *     reader.beginObject() must be called before this method is invoked.
+     * </p>
+     * <p>
+     *     This algorithm is basically a depth-first tree search.
+     * </p>
+     * <p>
+     *     TODO:  Nested JSON ARRAYS are not handled well, so it is possible to miss data.
+     * </p>
+     * @param reader The {@link JsonReader} that begins the JSON DOCUMENT.
+     * @throws IOException
+     * @throws IllegalStateException
+     */
     private void parseResult(JsonReader reader) throws IOException, IllegalStateException {
         if (reader == null)
             return;
 
         while (reader.hasNext()) {
+            // Peek the next JSON type:
             JsonToken peekVal = reader.peek();
 
+            // If we have reached the end of the OBJECT, return.
             if (peekVal == JsonToken.END_OBJECT)
                 return;
 
+            // If we find a NAME, inspect it to see if it matches the NAMES we are looking for:
             if (peekVal == JsonToken.NAME) {
 
                 String name = reader.nextName();
 
-                // If the name is something we're looking for, begin assuming JSON formatting:
+                // If the NAME is something we're looking for, dive in:
                 if (NAME_PEAK_HEART_RATES.equals(name) || NAME_PEAK_SPEEDS.equals(name)) {
+
+                    // Past this point, we are assuming the format of the section as an ARRAY of OBJECTS:
                     if (reader.peek() == JsonToken.BEGIN_ARRAY) {
 
-                        // Begin the array:
+                        // Begin the ARRAY:
                         reader.beginArray();
 
+                        // Parse the appropriate data:
                         if (NAME_PEAK_HEART_RATES.equals(name)) {
                             peakHeartRatesFromJson(reader);
                         } else if (NAME_PEAK_SPEEDS.equals(name)) {
                             peakSpeedsFromJson(reader);
                         }
 
-                        // Don't forget to end the array when we're done:
+                        // Don't forget to end the ARRAY when we're done:
                         reader.endArray();
                     }
                 }
 
             } else if (peekVal == JsonToken.BEGIN_OBJECT) {
 
-                // We found an object, so recursively search it for 'peakSpeeds':
+                // We found an OBJECT, so recursively search it for 'peakSpeeds':
                 reader.beginObject();
-                parseResult(reader);
+                parseResult(reader); // Recursive call
                 reader.endObject();
 
             } else if (peekVal == JsonToken.BEGIN_ARRAY) {
 
-                // Begin the Array:
+                /* ARRAY are dealt with specially because they can contain any type of VALUE. */
+
+                // Begin the ARRAY:
                 reader.beginArray();
 
-                // Inspect the next value:
+                // Inspect the first VALUE of the ARRAY:
                 peekVal = reader.peek();
 
                 if (peekVal == JsonToken.BEGIN_OBJECT) {
                     while (reader.hasNext() && (reader.peek() != JsonToken.END_ARRAY)) {
 
-                        // We found an array of objects.  Inspect them all!
+                        // We found an ARRAY of OBJECTS.  Inspect them all!
                         reader.beginObject();
                         parseResult(reader);
                         reader.endObject();
                     }
                 } else if (peekVal == JsonToken.BEGIN_ARRAY) {
                     while (reader.hasNext() && (reader.peek() != JsonToken.END_ARRAY)) {
-                        // We found an array of arrays.  For now, just skip the darn thing.
+                        // We found an ARRAY of ARRAYS.  For now, just skip the darn thing.
                         // TODO:  Recursively check arrays for what we're looking for.
                         reader.skipValue();
                     }
                 } else {
-                    // we have found an array of values, so skip them all:
+                    // we have found an ARRAY of other types, so skip them all:
                     while (reader.hasNext() && (reader.peek() != JsonToken.END_ARRAY)) {
                         reader.skipValue();
                     }
                 }
 
-                // Don't forget to end the array:
+                // Don't forget to end the ARRAY:
                 reader.endArray();
             } else {
 
@@ -134,10 +158,23 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
         }
     }
 
+    /**
+     * Populates the {@link ArrayList<PeakSpeed>} of Peak Speed POJOs from the provided JSON ARRAY.
+     * <p>
+     *     NOTE:  This method assumes that the reader is at a valid starting position.  I.E.
+     *     reader.beginArray() must be called before this method is invoked.
+     * </p>
+     * @param reader The {@link JsonReader} that begins the JSON ARRAY.
+     * @throws IOException
+     * @throws IllegalStateException
+     */
     private void peakSpeedsFromJson(JsonReader reader) throws IOException, IllegalStateException {
         Log.d(TAG, "peakSpeedsFromJson()");
 
+        // Iterate over the entire ARRAY:
         while (reader.hasNext() && (reader.peek() != JsonToken.END_ARRAY)) {
+
+            // Initialize dummy values so that missing data can be easily seen later:
             long beginVal = -1;
             long endVal = -1;
             int intervalVal = -1;
@@ -145,6 +182,9 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
 
             reader.beginObject();
 
+            // Iterate over the entire OBJECT, pulling out values as we find them.
+            // NOTE: this assumes proper formatting of the JSON, and will throw an exception if the
+            //       VALUE data type does not match the expected type.
             while (reader.hasNext() && (reader.peek() != JsonToken.END_OBJECT)) {
                 switch (reader.nextName()) {
                     case NAME_BEGIN:
@@ -170,10 +210,23 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
         }
     }
 
+    /**
+     * Populates the {@link ArrayList<PeakHeartRate>} of Peak Heart Rate POJOs from the provided JSON ARRAY.
+     * <p>
+     *     NOTE:  This method assumes that the reader is at a valid starting position.  I.E.
+     *     reader.beginArray() must be called before this method is invoked.
+     * </p>
+     * @param reader The {@link JsonReader} that begins the JSON ARRAY.
+     * @throws IOException
+     * @throws IllegalStateException
+     */
     private void peakHeartRatesFromJson(JsonReader reader) throws IOException, IllegalStateException {
         Log.d(TAG, "peakHeartRatesFromJson()");
 
+        // Iterate over the entire ARRAY:
         while (reader.hasNext() && (reader.peek() != JsonToken.END_ARRAY)) {
+
+            // Initialize dummy values so that missing data can be easily seen later:
             long beginVal = -1;
             long endVal = -1;
             int intervalVal = -1;
@@ -181,6 +234,9 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
 
             reader.beginObject();
 
+            // Iterate over the entire OBJECT, pulling out values as we find them.
+            // NOTE: this assumes proper formatting of the JSON, and will throw an exception if the
+            //       VALUE data type does not match the expected type.
             while (reader.hasNext() && (reader.peek() != JsonToken.END_OBJECT)) {
                 switch (reader.nextName()) {
                     case NAME_BEGIN:
@@ -206,6 +262,10 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
         }
     }
 
+    /**
+     * Populates the lists of Peak Heart Rates and Peak Speeds from the JSON provided at the REST endpoint.
+     * @param workoutTag The Workout Tag to use in the REST request.
+     */
     private void fetchData(String workoutTag) {
         // Reset old data if we still have it:
         mPeakHeartRates.clear();
@@ -222,22 +282,35 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
             return;
         }
 
-        InputStream is = null;
+        // I'm not sure whether closing the JsonReader will close the underlying InputStream as well
+        // so I'm defining all the steps and closing each one just to be safe.
+        InputStream inputStream = null;
         InputStreamReader streamReader = null;
         JsonReader jsonReader = null;
 
         // Open the TCP connection and read the input stream:
+        // TODO:  Handle error responses from the connection (e.g. 404, etc.).
         try {
+            // Open the TCP connection:
             urlConnection = (HttpsURLConnection)endpoint.openConnection();
-            is = urlConnection.getInputStream();
-            streamReader = new InputStreamReader(is, "UTF-8");
+
+            // Initialize the streams:
+            inputStream = urlConnection.getInputStream();
+            streamReader = new InputStreamReader(inputStream, "UTF-8");
             jsonReader = new JsonReader(streamReader);
+
+            // Don't forget to begin the JSON OBJECT before calling parseResult()!
             jsonReader.beginObject();
+
+            // Parse the JSON
             parseResult(jsonReader);
+
         } catch (IOException ex) {
+            // A stream read error has occurred:
             Log.e(TAG, ex.getMessage());
             return;
         } catch (IllegalStateException ex) {
+            // This is thrown when the JsonReader tries to read something it doesn't understand:
             Log.e(TAG, ex.getMessage());
             Log.e(TAG, "Malformed JSON!");
             return;
@@ -257,13 +330,15 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
                     Log.e(TAG, "fetchData() - Failed to close Stream Reader!");
                 }
             }
-            if (is != null) {
+            if (inputStream != null) {
                 try {
-                    is.close();
+                    inputStream.close();
                 } catch (IOException ex) {
                     Log.e(TAG, "fetchData() - Failed to close Input Stream!");
                 }
             }
+
+            // Finally, close the connection:
             if (urlConnection != null) {
                 urlConnection.disconnect();
             }
