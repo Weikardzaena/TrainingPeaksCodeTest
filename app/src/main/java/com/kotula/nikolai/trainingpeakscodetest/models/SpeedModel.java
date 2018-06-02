@@ -33,10 +33,15 @@ public class SpeedModel extends PeakModel<PeakSpeed> implements WorkoutResultRec
         Log.d(TAG, "onReceiveResult()");
         ArrayList<PeakSpeed> peakSpeeds = resultData.getParcelableArrayList(PeakSpeed.PARCEL_PEAK_SPEED);
         if (peakSpeeds != null) {
+            // Remove duplicates by adding everything to a Set:
             ArrayList<PeakSpeed> trimmedSpeeds = new ArrayList<>(new HashSet<>(peakSpeeds));
+
+            // If a null value remains, remove it.
+            trimmedSpeeds.remove(null);
 
             // Always sort AFTER the Hash Set because of ordering and for slight performance gains.
             Collections.sort(trimmedSpeeds, new PeakSpeedComparator());
+
             mData.setValue(trimmedSpeeds);
         }
     }

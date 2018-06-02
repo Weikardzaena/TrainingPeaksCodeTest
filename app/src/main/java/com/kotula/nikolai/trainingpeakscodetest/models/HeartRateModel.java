@@ -1,14 +1,9 @@
 package com.kotula.nikolai.trainingpeakscodetest.models;
 
-import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.OnLifecycleEvent;
 import android.arch.lifecycle.ViewModel;
-import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
@@ -38,7 +33,11 @@ public class HeartRateModel extends PeakModel<PeakHeartRate> implements WorkoutR
         Log.d(TAG, "onReceiveResult()");
         ArrayList<PeakHeartRate> heartRates = resultData.getParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE);
         if (heartRates != null) {
+            // Remove duplicates by adding everything to a Set:
             ArrayList<PeakHeartRate> trimmedVals = new ArrayList<>(new HashSet<>(heartRates));
+
+            // If a null value remains, remove it.
+            trimmedVals.remove(null);
 
             // Always sort AFTER the Hash Set because of ordering and for slight performance gains.
             Collections.sort(trimmedVals, new PeakHeartRateComparator());
