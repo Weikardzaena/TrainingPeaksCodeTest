@@ -16,6 +16,8 @@
         android:id="@+id/interval_peak"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minEms="6"
+        android:textAlignment="viewEnd"
         android:layout_margin="@dimen/text_margin"
         android:textAppearance="?attr/textAppearanceListItem" />
 
@@ -23,6 +25,8 @@
         android:id="@+id/value_peak"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minEms="5"
+        android:textAlignment="viewEnd"
         android:layout_margin="@dimen/text_margin"
         android:textAppearance="?attr/textAppearanceListItem" />
 
@@ -30,6 +34,8 @@
         android:id="@+id/unit_peak"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:minEms="2"
+        android:textAlignment="viewEnd"
         android:layout_margin="@dimen/text_margin"
         android:textAppearance="?attr/textAppearanceListItem" />
 </LinearLayout>

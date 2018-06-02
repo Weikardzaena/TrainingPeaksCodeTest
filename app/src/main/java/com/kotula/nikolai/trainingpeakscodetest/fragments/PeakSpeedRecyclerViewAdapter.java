@@ -72,13 +72,13 @@ public class PeakSpeedRecyclerViewAdapter extends RecyclerView.Adapter<PeakSpeed
         int seconds = interval % 60;
 
 
-        if (hours > 0) {
+        if (Math.abs(hours) > 0) {
             // If we have hours, deal with that case first:
             if ((seconds == 0) && (minutes == 0))
                 return String.format(Locale.getDefault(), "%d hr", hours);
             else
                 return String.format(Locale.getDefault(), "%02d:%02d:%02d", hours, minutes, seconds);
-        } else if (minutes > 0) {
+        } else if (Math.abs(minutes) > 0) {
             // We don't have hours, but we have minutes:
             if (seconds == 0)
                 return String.format(Locale.getDefault(), "%d min", minutes);
