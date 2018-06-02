@@ -11,6 +11,8 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 
 import com.kotula.nikolai.trainingpeakscodetest.R;
+import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
+import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakHeartRateFragment;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakSpeedFragment;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.dummy.DummyContent;
@@ -60,7 +62,13 @@ public class WorkoutExplorer extends AppCompatActivity
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem dummyItem)
+    public void onListFragmentInteraction(PeakHeartRate peakHeartRate)
+    {
+        // For now, do nothing.
+    }
+
+    @Override
+    public void onListFragmentInteraction(PeakSpeed peakSpeed)
     {
         // For now, do nothing.
     }

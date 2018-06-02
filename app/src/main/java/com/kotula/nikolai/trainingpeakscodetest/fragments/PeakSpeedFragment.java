@@ -3,13 +3,12 @@ package com.kotula.nikolai.trainingpeakscodetest.fragments;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.LifecycleRegistry;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,9 +17,7 @@ import android.view.ViewGroup;
 
 import com.kotula.nikolai.trainingpeakscodetest.R;
 import com.kotula.nikolai.trainingpeakscodetest.activities.WorkoutSubmission;
-import com.kotula.nikolai.trainingpeakscodetest.fragments.dummy.DummyContent;
-import com.kotula.nikolai.trainingpeakscodetest.fragments.dummy.DummyContent.DummyItem;
-import com.kotula.nikolai.trainingpeakscodetest.models.HeartRateModel;
+import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
 import com.kotula.nikolai.trainingpeakscodetest.models.SpeedModel;
 
 import java.util.List;
@@ -36,13 +33,8 @@ public class PeakSpeedFragment extends Fragment implements LifecycleOwner {
     private static final String TAG = "PeakSpeedFragment";
 
     private LifecycleRegistry mLifecycleRegistry;
-
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
-
+    private PeakSpeedRecyclerViewAdapter mViewAdapter = null;
     private SpeedModel mSpeedModel;
 
     /**
@@ -66,25 +58,20 @@ public class PeakSpeedFragment extends Fragment implements LifecycleOwner {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Get the ViewModel for this fragment.
-        mSpeedModel = ViewModelProviders.of(this).get(SpeedModel.class);
-
-        // Always remember to call init() on this after getting an instance from the view model providers!
-        mSpeedModel.init(getContext());
-        mSpeedModel.updatePeakSpeeds(getArguments().getString(WorkoutSubmission.WORKOUT_TAG));
+        // Register this fragment to trigger the ON_CREATE Lifecycle events for listeners:
+        mLifecycleRegistry = new LifecycleRegistry(this);
+        mLifecycleRegistry.markState(Lifecycle.State.CREATED);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Register this fragment to trigger the ON_CREATE Lifecycle events for listeners:
-        mLifecycleRegistry = new LifecycleRegistry(this);
-        mLifecycleRegistry.markState(Lifecycle.State.CREATED);
+        // Get the ViewModel for this fragment.
+        mSpeedModel = ViewModelProviders.of(this).get(SpeedModel.class);
 
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
+        // Always remember to call init() on this after getting an instance from the view model providers!
+        mSpeedModel.init(getContext());
     }
 
     @Override
@@ -92,16 +79,29 @@ public class PeakSpeedFragment extends Fragment implements LifecycleOwner {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_peakspeed_list, container, false);
 
-        // Set the adapter
+        // Set the view and adapter:
         if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+            final RecyclerView recyclerView = (RecyclerView) view;
+
+            // Create the observer for the LiveData:
+            final Observer<List<PeakSpeed>> liveDataObserver = new Observer<List<PeakSpeed>>() {
+                @Override
+                public void onChanged(@Nullable List<PeakSpeed> peakSpeeds) {
+                    if (mViewAdapter == null) {
+                        mViewAdapter = new PeakSpeedRecyclerViewAdapter(peakSpeeds, mListener);
+                        recyclerView.setAdapter(mViewAdapter);
+                    } else {
+                        mViewAdapter.notifyDataSetChanged();
+                    }
+                }
+            };
+
+            // Wire up the Model observer with the provided parameters:
+            String workoutTag = null;
+            if (getArguments() != null) {
+                workoutTag = getArguments().getString(WorkoutSubmission.WORKOUT_TAG);
             }
-            recyclerView.setAdapter(new PeakSpeedRecyclerViewAdapter(DummyContent.ITEMS, mListener));
+            mSpeedModel.getPeakSpeeds(workoutTag).observe(this, liveDataObserver);
         }
         return view;
     }
@@ -139,6 +139,12 @@ public class PeakSpeedFragment extends Fragment implements LifecycleOwner {
         mListener = null;
     }
 
+    @Override
+    public void onDestroy() {
+        mLifecycleRegistry.markState(Lifecycle.State.DESTROYED);
+        super.onDestroy();
+    }
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -151,6 +157,6 @@ public class PeakSpeedFragment extends Fragment implements LifecycleOwner {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        void onListFragmentInteraction(PeakSpeed item);
     }
 }

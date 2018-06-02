@@ -19,7 +19,7 @@ public class UnitTestWorkoutRepo implements IWorkoutRepo {
      */
     @Override
     public List<PeakHeartRate> getPeakHeartRates(String workoutTag) {
-        Log.d(TAG, "getPeakHeartRates()");
+        Log.d(TAG, "getPeakSpeeds()");
 
         ArrayList<PeakHeartRate> heartRates = new ArrayList<PeakHeartRate>();
         heartRates.add(new PeakHeartRate(10, 0, 0, 0));

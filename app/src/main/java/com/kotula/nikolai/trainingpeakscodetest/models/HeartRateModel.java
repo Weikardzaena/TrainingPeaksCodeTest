@@ -3,6 +3,7 @@ package com.kotula.nikolai.trainingpeakscodetest.models;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.OnLifecycleEvent;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
@@ -15,6 +16,7 @@ import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutResultReceiver;
 import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutService;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * {@link ViewModel} Implementation which acts as the model for fetching Workout data.
@@ -23,8 +25,9 @@ public class HeartRateModel extends ViewModel implements WorkoutResultReceiver.I
                                                          LifecycleObserver {
     private static final String TAG = "HeartRateModel";
 
-    private Context mContext;
+    private Context mContext; // So long as we always remember to null this ON_DESTROY lifecycle event, holding a reference to the Context is fine.
     private WorkoutResultReceiver mResultReceiver;
+    private MutableLiveData<List<PeakHeartRate>> mPeakHeartRates = new MutableLiveData<>();
 
     /**
      * Initializes parameters for this {@link ViewModel}.  This MUST be called after getting an instance of this from {@link android.arch.lifecycle.ViewModelProviders}.
@@ -36,14 +39,6 @@ public class HeartRateModel extends ViewModel implements WorkoutResultReceiver.I
     }
 
     /**
-     * Public interface for fetching peak heart rate data and updating the {@link ViewModel} {@link LiveData}.
-     * @param workoutTag The Workout Tag to fetch from the data source.
-     */
-    public void updatePeakHeartRates(String workoutTag) {
-        WorkoutService.startActionFetchPeakHeartRates(mContext, mResultReceiver, workoutTag);
-    }
-
-    /**
      * Callback for when the ResultReceiver has finished its work and has results.
      * @param resultCode The status code.
      * @param resultData The {@link Bundle} that contains the data.
@@ -52,12 +47,17 @@ public class HeartRateModel extends ViewModel implements WorkoutResultReceiver.I
         Log.d(TAG, "onReceiveResult()");
         ArrayList<PeakHeartRate> heartRates = resultData.getParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE);
         if (heartRates != null) {
-            for (PeakHeartRate heartRate : heartRates) {
-                if (heartRate != null) {
-                    Log.d(TAG, heartRate.toString());
-                }
-            }
+            mPeakHeartRates.setValue(heartRates);
         }
+    }
+
+    /**
+     * Public interface for fetching peak heart rate data and updating the {@link ViewModel} {@link LiveData}.
+     * @param workoutTag The Workout Tag to fetch from the data source.
+     */
+    public LiveData<List<PeakHeartRate>> getPeakHeartRates(String workoutTag) {
+        WorkoutService.startActionFetchPeakHeartRates(mContext, mResultReceiver, workoutTag);
+        return mPeakHeartRates;
     }
 
     /**
@@ -89,5 +89,10 @@ public class HeartRateModel extends ViewModel implements WorkoutResultReceiver.I
         if (mResultReceiver != null) {
             mResultReceiver.removeReceiver();
         }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    public void removeContext() {
+        mContext = null;
     }
 }
