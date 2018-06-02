@@ -1,5 +1,6 @@
 package com.kotula.nikolai.trainingpeakscodetest.fragments;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -62,7 +63,15 @@ public class PeakHeartRateRecyclerViewAdapter extends RecyclerView.Adapter<PeakH
                 }
             }
         });
+
+        // Alternate row colors for easier viewing:
+        if ((position % 2) == 0) {
+            holder.itemView.setBackgroundColor(Color.parseColor("#F0F0F0FF"));
+        } else {
+            holder.itemView.setBackgroundColor(Color.parseColor("#FFFFFFFF"));
+        }
     }
+
     @NonNull
     private String buildIntervalString(int interval) {
         // Populate relevant values first:

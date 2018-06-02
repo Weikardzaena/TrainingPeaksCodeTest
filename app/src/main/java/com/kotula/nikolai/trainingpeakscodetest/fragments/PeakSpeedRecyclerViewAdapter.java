@@ -1,5 +1,6 @@
 package com.kotula.nikolai.trainingpeakscodetest.fragments;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -62,6 +63,13 @@ public class PeakSpeedRecyclerViewAdapter extends RecyclerView.Adapter<PeakSpeed
                 }
             }
         });
+
+        // Alternate row colors for easier viewing:
+        if ((position % 2) == 0) {
+            holder.itemView.setBackgroundColor(Color.parseColor("#F0F0F0FF"));
+        } else {
+            holder.itemView.setBackgroundColor(Color.parseColor("#FFFFFFFF"));
+        }
     }
 
     @NonNull
