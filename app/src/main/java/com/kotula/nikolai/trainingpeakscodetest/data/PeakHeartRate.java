@@ -78,30 +78,22 @@ public class PeakHeartRate implements Parcelable {
 
     @Override
     public String toString() {
-        final String lineSeparator = System.getProperty("line.separator");
+        String stringRep = "";
 
-        StringBuilder builder = new StringBuilder();
-        builder.append("Peak Heart Rate:");
-        builder.append(lineSeparator);
-        builder.append(lineSeparator);
+        stringRep += "Peak Heart Rate: ";
+        stringRep += "begin: ";
+        stringRep += begin;
 
-        builder.append("begin: ");
-        builder.append(begin);
-        builder.append(lineSeparator);
+        stringRep += " end: ";
+        stringRep += end;
 
-        builder.append("end: ");
-        builder.append(end);
-        builder.append(lineSeparator);
+        stringRep += " interval: ";
+        stringRep += interval;
 
-        builder.append("interval: ");
-        builder.append(interval);
-        builder.append(lineSeparator);
+        stringRep += " value: ";
+        stringRep += value;
 
-        builder.append("value: ");
-        builder.append(value);
-        builder.append(lineSeparator);
-
-        return builder.toString();
+        return stringRep;
     }
 
     private boolean equals(PeakHeartRate other) {

@@ -44,15 +44,14 @@ public class WorkoutExplorer extends AppCompatActivity
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
+        // Create the adapter that will return a fragment for each of the primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        TabLayout tabLayout = findViewById(R.id.tabs);
 
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
         tabLayout.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(mViewPager));
@@ -82,19 +81,31 @@ public class WorkoutExplorer extends AppCompatActivity
             super(fm);
         }
 
+        /**
+         * Gets an instance of the {@link Fragment} at the specified Tab index.
+         * <p/>
+         * This method MUST handle exactly the same number of cases as the number returned by getCount().
+         * @param position The Tab index to get the {@link Fragment} for.
+         * @return The {@link Fragment} at the specified index.
+         */
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
-                // TODO:  Verify null String is handled gracefully
                 return PeakHeartRateFragment.newInstance(mWorkoutTag);
             } else if (position == 1) {
-                // TODO:  Verify null String is handled gracefully
                 return PeakSpeedFragment.newInstance(mWorkoutTag);
             }
 
+            // We should NEVER get here.  The cases above MUST cover all of the positions.
             return null;
         }
 
+        /**
+         * Returns the number of tabs in this Tab View.
+         * <p/>
+         * This number MUST match the number of items that can be returned from getItem().
+         * @return The number of tabs in this Tab View.
+         */
         @Override
         public int getCount() {
             // Show 2 total pages.

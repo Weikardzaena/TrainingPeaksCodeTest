@@ -57,7 +57,6 @@ public class HeartRateModel extends PeakModel<PeakHeartRate> implements WorkoutR
      */
     @Override
     public LiveData<List<PeakHeartRate>> getData(String workoutTag) {
-        // TODO:  Verify null String is handled gracefully
         WorkoutService.startActionFetchPeakHeartRates(mContext, mResultReceiver, workoutTag);
         return mData;
     }

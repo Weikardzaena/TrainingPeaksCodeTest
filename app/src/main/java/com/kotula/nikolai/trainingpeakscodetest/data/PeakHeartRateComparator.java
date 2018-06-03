@@ -10,10 +10,10 @@ public class PeakHeartRateComparator implements Comparator<PeakHeartRate> {
     public int compare(PeakHeartRate o1, PeakHeartRate o2) {
         if (o1 == null) {
             if (o2 == null) {
-                // compare(null, null) should return 0.
+                // compare(null, null) should return equality (zero).
                 return 0;
             } else {
-                // compare(null, <value>) means
+                // compare(null, <value>): 'null' should come after everything.
                 return 1;
             }
         } else if (o2 == null) {

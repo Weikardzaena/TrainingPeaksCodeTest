@@ -13,7 +13,7 @@ public class PeakSpeedComparator implements Comparator<PeakSpeed> {
                 // compare(null, null) should return 0.
                 return 0;
             } else {
-                // compare(null, <value>) means
+                // compare(null, <value>): 'null' should come after everything.
                 return 1;
             }
         } else if (o2 == null) {

@@ -36,7 +36,7 @@ public class WorkoutResultReceiver extends ResultReceiver {
 
     /**
      * Removes the reference to the receiver that will handle the onReceiveResult callback.
-     *
+     * <p/>
      * This MUST be called whenever an activity or fragment moves into the PAUSED state to prevent
      * leaks.
      */
@@ -46,7 +46,7 @@ public class WorkoutResultReceiver extends ResultReceiver {
 
     /**
      * Sets the reference to the receiver that will handle the onReceiveResult callback.
-     *
+     * <p/>
      * This MUST be called whenever an activity or fragment moves into the RESUMED state to allow
      * callbacks to work properly.
      */

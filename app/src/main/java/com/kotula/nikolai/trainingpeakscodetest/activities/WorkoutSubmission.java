@@ -35,7 +35,6 @@ public class WorkoutSubmission extends AppCompatActivity {
             Intent workoutExplorerIntent = new Intent(this, WorkoutExplorer.class);
 
             // Put the workout tag text as the data to pass to the explorer activity:
-            // TODO:  Verify null String is handled gracefully
             workoutExplorerIntent.putExtra(WORKOUT_TAG, mWorkoutTagText.getText().toString());
             startActivity(workoutExplorerIntent);
         }
