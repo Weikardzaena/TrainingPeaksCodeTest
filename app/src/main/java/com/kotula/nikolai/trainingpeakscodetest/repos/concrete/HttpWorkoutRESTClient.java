@@ -41,7 +41,7 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
     @Override
     public List<PeakHeartRate> getPeakHeartRates(String workoutTag) {
         Log.d(TAG, "getPeakSpeeds()");
-        fetchData(workoutTag);
+        fetchData((workoutTag == null) ? "" : workoutTag);
         return mPeakHeartRates;
     }
 
@@ -52,7 +52,7 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
     @Override
     public List<PeakSpeed> getPeakSpeeds(String workoutTag) {
         Log.d(TAG, "getPeakSpeeds()");
-        fetchData(workoutTag);
+        fetchData((workoutTag == null) ? "" : workoutTag);
         return mPeakSpeeds;
     }
 

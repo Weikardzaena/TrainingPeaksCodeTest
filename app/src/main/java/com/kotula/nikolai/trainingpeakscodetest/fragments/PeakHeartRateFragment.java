@@ -101,7 +101,6 @@ public class PeakHeartRateFragment extends Fragment implements LifecycleOwner {
             if (getArguments() != null) {
                 workoutTag = getArguments().getString(WorkoutSubmission.WORKOUT_TAG);
             }
-            // TODO:  Verify null String is handled gracefully
             mHeartRateModel.getData(workoutTag).observe(this, liveDataObserver);
         }
         return view;
