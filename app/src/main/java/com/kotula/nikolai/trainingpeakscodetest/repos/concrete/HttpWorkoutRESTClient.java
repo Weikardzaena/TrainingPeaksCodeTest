@@ -40,14 +40,15 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
      * <p/>
      * This is a BLOCKING operation.
      * @param workoutTag The Workout Tag to fetch from the endpoint.
-     * @return The {@link List} of {@link PeakHeartRate} objects from the data source.
+     * @param outData The {@link List} of {@link PeakHeartRate} objects that will be filled with the fetched data.
+     * @return A code indicating the result of the operation.
      */
     @Override
     public ResultCode getPeakHeartRates(String workoutTag, List<PeakHeartRate> outData) {
         Log.d(TAG, "getPeakSpeeds()");
-        fetchData(workoutTag);
+        ResultCode result = fetchData(workoutTag);
         outData.addAll(mPeakHeartRates);
-        return ResultCode.SUCCESS;
+        return result;
     }
 
     /**
@@ -55,14 +56,15 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
      * <p/>
      * This is a BLOCKING operation.
      * @param workoutTag The Workout Tag to fetch from the endpoint.
-     * @return The {@link List} of {@link PeakSpeed} objects from the data source.
+     * @param outData The {@link List} of {@link PeakSpeed} objects that will be filled with the fetched data.
+     * @return A code indicating the result of the operation.
      */
     @Override
     public ResultCode getPeakSpeeds(String workoutTag, List<PeakSpeed> outData) {
         Log.d(TAG, "getPeakSpeeds()");
-        fetchData(workoutTag);
+        ResultCode result = fetchData(workoutTag);
         outData.addAll(mPeakSpeeds);
-        return ResultCode.SUCCESS;
+        return result;
     }
 
     /**
@@ -294,8 +296,9 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
     /**
      * Populates the lists of Peak Heart Rates and Peak Speeds from the JSON provided at the REST endpoint.
      * @param workoutTag The Workout Tag to use in the REST request.
+     * @return A code indicating the result of the operation.
      */
-    private void fetchData(String workoutTag) {
+    private ResultCode fetchData(String workoutTag) {
         // Reset old data if we still have it:
         mPeakHeartRates.clear();
         mPeakSpeeds.clear();
@@ -308,7 +311,7 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
             endpoint = new URL(ENDPOINT.concat((workoutTag == null) ? "" : workoutTag));
         } catch (MalformedURLException ex) {
             Log.e(TAG, ex.getMessage());
-            return;
+            return ResultCode.FAIL_CONNECTION;
         }
 
         // I'm not sure whether closing the JsonReader will close the underlying InputStream as well
@@ -318,13 +321,10 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
         JsonReader jsonReader = null;
 
         // Open the TCP connection and read the input stream:
-        // TODO:  Handle error responses from the connection (e.g. 404, etc.).
         try {
             // Open the TCP connection:
             urlConnection = (HttpsURLConnection)endpoint.openConnection();
-            switch (urlConnection.getResponseCode()) {
-
-            }
+            urlConnection.connect();
 
             // Initialize the streams:
             inputStream = urlConnection.getInputStream();
@@ -338,12 +338,35 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
             parseJsonObjectForData(jsonReader);
 
         } catch (IOException ex) {
+
             // A stream read error has occurred:
             Log.e(TAG, ex.getMessage());
+
+            // IOExceptions happen when the Stream fails to open, which usually means an HTTP error
+            // has occurred:
+            if (urlConnection != null) {
+                InputStream errorStream = urlConnection.getErrorStream();
+                if (errorStream != null) {
+                    return ResultCode.FAIL_CONNECTION;
+                }
+            }
+
+            // If there is no Error Stream, then return generic Stream-related failure code:
+            return ResultCode.FAIL_STREAM;
+
         } catch (IllegalStateException ex) {
+
             // This is thrown when the JsonReader tries to read something it doesn't understand:
             Log.e(TAG, ex.getMessage());
-            Log.e(TAG, "Malformed JSON!");
+            return ResultCode.FAIL_PARSE;
+
+        } catch (Exception ex) {
+
+            // Catch-all case for all errors:
+            // Mostly this is here to catch the case when the endpoint is not HTTP.
+            Log.e(TAG, ex.getMessage());
+            return ResultCode.FAIL_UNKNOWN;
+
         } finally {
             // Close the readers:
             if (jsonReader != null) {
@@ -373,5 +396,8 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
                 urlConnection.disconnect();
             }
         }
+
+        // If we've reached this, nothing went wrong:
+        return ResultCode.SUCCESS;
     }
 }

@@ -4,5 +4,6 @@ public enum ResultCode {
     SUCCESS,
     FAIL_CONNECTION,
     FAIL_STREAM,
-    FAIL_PARSE
+    FAIL_PARSE,
+    FAIL_UNKNOWN
 }

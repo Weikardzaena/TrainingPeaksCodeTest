@@ -19,7 +19,8 @@ public class UnitTestWorkoutRepo implements IWorkoutRepo {
      * <p/>
      * This is a BLOCKING operation.
      * @param workoutTag The Workout Tag to fetch from the endpoint.
-     * @return The {@link List} of {@link PeakHeartRate} objects from the data source.
+     * @param outData The {@link List} of {@link PeakHeartRate} objects that will be filled with the fetched data.
+     * @return A code indicating the result of the operation.
      */
     @Override
     public ResultCode getPeakHeartRates(String workoutTag, List<PeakHeartRate> outData) {
@@ -66,7 +67,8 @@ public class UnitTestWorkoutRepo implements IWorkoutRepo {
      * <p/>
      * This is a BLOCKING operation.
      * @param workoutTag The Workout Tag to fetch from the endpoint.
-     * @return The {@link List} of {@link PeakSpeed} objects from the data source.
+     * @param outData The {@link List} of {@link PeakSpeed} objects that will be filled with the fetched data.
+     * @return A code indicating the result of the operation.
      */
     @Override
     public ResultCode getPeakSpeeds(String workoutTag, List<PeakSpeed> outData) {
