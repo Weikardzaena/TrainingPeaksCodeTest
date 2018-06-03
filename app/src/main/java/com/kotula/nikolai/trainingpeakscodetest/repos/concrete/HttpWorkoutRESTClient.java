@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
+import com.kotula.nikolai.trainingpeakscodetest.repos.ResultCode;
 import com.kotula.nikolai.trainingpeakscodetest.repos.interfaces.IWorkoutRepo;
 
 import java.io.IOException;
@@ -42,10 +43,11 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
      * @return The {@link List} of {@link PeakHeartRate} objects from the data source.
      */
     @Override
-    public List<PeakHeartRate> getPeakHeartRates(String workoutTag) {
+    public ResultCode getPeakHeartRates(String workoutTag, List<PeakHeartRate> outData) {
         Log.d(TAG, "getPeakSpeeds()");
         fetchData(workoutTag);
-        return mPeakHeartRates;
+        outData.addAll(mPeakHeartRates);
+        return ResultCode.SUCCESS;
     }
 
     /**
@@ -56,10 +58,11 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
      * @return The {@link List} of {@link PeakSpeed} objects from the data source.
      */
     @Override
-    public List<PeakSpeed> getPeakSpeeds(String workoutTag) {
+    public ResultCode getPeakSpeeds(String workoutTag, List<PeakSpeed> outData) {
         Log.d(TAG, "getPeakSpeeds()");
         fetchData(workoutTag);
-        return mPeakSpeeds;
+        outData.addAll(mPeakSpeeds);
+        return ResultCode.SUCCESS;
     }
 
     /**
@@ -319,6 +322,9 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
         try {
             // Open the TCP connection:
             urlConnection = (HttpsURLConnection)endpoint.openConnection();
+            switch (urlConnection.getResponseCode()) {
+
+            }
 
             // Initialize the streams:
             inputStream = urlConnection.getInputStream();

@@ -100,7 +100,8 @@ public class WorkoutService extends IntentService {
     private void handleActionFetchPeakHeartRates(String workoutTag) {
         if ((mWorkoutRepo != null) && (mResultReceiver != null)) {
             Bundle bundle = new Bundle();
-            List<PeakHeartRate> peakHeartRates = mWorkoutRepo.getPeakHeartRates(workoutTag);
+            ArrayList<PeakHeartRate> peakHeartRates = new ArrayList<>();
+            mWorkoutRepo.getPeakHeartRates(workoutTag, peakHeartRates);
 
             if (peakHeartRates != null) {
                 bundle.putParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE, new ArrayList<Parcelable>(peakHeartRates));
@@ -119,7 +120,8 @@ public class WorkoutService extends IntentService {
     private void handleActionFetchPeakSpeeds(String workoutTag) {
         if ((mWorkoutRepo != null) && (mResultReceiver != null)) {
             Bundle bundle = new Bundle();
-            List<PeakSpeed> peakSpeeds = mWorkoutRepo.getPeakSpeeds(workoutTag);
+            ArrayList<PeakSpeed> peakSpeeds = new ArrayList<>();
+            mWorkoutRepo.getPeakSpeeds(workoutTag, peakSpeeds);
 
             if (peakSpeeds != null) {
                 bundle.putParcelableArrayList(PeakSpeed.PARCEL_PEAK_SPEED, new ArrayList<Parcelable>(peakSpeeds));
