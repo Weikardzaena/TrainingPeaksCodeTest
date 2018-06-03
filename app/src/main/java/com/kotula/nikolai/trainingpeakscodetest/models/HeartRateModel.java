@@ -1,93 +1,64 @@
 package com.kotula.nikolai.trainingpeakscodetest.models;
 
-import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleObserver;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.OnLifecycleEvent;
 import android.arch.lifecycle.ViewModel;
-import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
+import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRateComparator;
 import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutResultReceiver;
 import com.kotula.nikolai.trainingpeakscodetest.services.WorkoutService;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * {@link ViewModel} Implementation which acts as the model for fetching Workout data.
  */
-public class HeartRateModel extends ViewModel implements WorkoutResultReceiver.IWorkoutReceiver,
-                                                         LifecycleObserver {
+public class HeartRateModel extends PeakModel<PeakHeartRate> implements WorkoutResultReceiver.IWorkoutReceiver,
+                                                                        LifecycleObserver {
     private static final String TAG = "HeartRateModel";
-
-    private Context mContext;
-    private WorkoutResultReceiver mResultReceiver;
-
-    /**
-     * Initializes parameters for this {@link ViewModel}.  This MUST be called after getting an instance of this from {@link android.arch.lifecycle.ViewModelProviders}.
-     * @param context The application context.
-     */
-    public void init(Context context) {
-        mContext = context;
-        mResultReceiver = new WorkoutResultReceiver(new Handler(), this);
-    }
-
-    /**
-     * Public interface for fetching peak heart rate data and updating the {@link ViewModel} {@link LiveData}.
-     * @param workoutTag The Workout Tag to fetch from the data source.
-     */
-    public void updatePeakHeartRates(String workoutTag) {
-        WorkoutService.startActionFetchPeakHeartRates(mContext, mResultReceiver, workoutTag);
-    }
 
     /**
      * Callback for when the ResultReceiver has finished its work and has results.
      * @param resultCode The status code.
      * @param resultData The {@link Bundle} that contains the data.
      */
+    @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
         Log.d(TAG, "onReceiveResult()");
         ArrayList<PeakHeartRate> heartRates = resultData.getParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE);
+
+        // The following set of logic to remove duplicates and sort the array is not optimized, but
+        // considering that this is at the tail end of a comparatively very time-consuming operation
+        // of fetching and parsing the data from a REST endpoint, the performance gains of
+        // optimizing this logic is not worth the time.
         if (heartRates != null) {
-            for (PeakHeartRate heartRate : heartRates) {
-                if (heartRate != null) {
-                    Log.d(TAG, heartRate.toString());
-                }
-            }
+            // Remove duplicates by adding everything to a Set:
+            ArrayList<PeakHeartRate> trimmedVals = new ArrayList<>(new HashSet<>(heartRates));
+
+            // If a null value remains, remove it.
+            trimmedVals.remove(null);
+
+            // Always sort AFTER the Hash Set because of ordering.
+            Collections.sort(trimmedVals, new PeakHeartRateComparator());
+
+            mData.setValue(trimmedVals);
         }
     }
 
     /**
-     * Binds to the ON_CREATE Lifecycle event for activities/fragments to instantiate the Result Receiver.
+     * Public interface for fetching peak heart rate data and updating the {@link ViewModel} {@link LiveData}.
+     * @param workoutTag The Workout Tag to fetch from the data source.
      */
-    @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
-    public void createReceiver() {
-        mResultReceiver = new WorkoutResultReceiver(new Handler(), this);
-    }
-
-
-    /**
-     * Binds to the ON_RESUME Lifecycle event for activities/fragments to update the Result Receiver with our instance.
-     * This is necessary because the reference to this will be removed from the Result Receiver ON_PAUSE.
-     */
-    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    public void enableReceiver() {
-        if (mResultReceiver != null) {
-            mResultReceiver.setReceiver(this);
-        }
-    }
-
-    /**
-     * Binds to the ON_PAUSE Lifecycle event for activities/fragments to remove the reference to this from the Result Receiver.
-     * This is necessary because if the reference to this is left hanging, when the activity/fragment is destroyed, the references could leak.
-     */
-    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    public void disableReceiver() {
-        if (mResultReceiver != null) {
-            mResultReceiver.removeReceiver();
-        }
+    @Override
+    public LiveData<List<PeakHeartRate>> getData(String workoutTag) {
+        // TODO:  Verify null String is handled gracefully
+        WorkoutService.startActionFetchPeakHeartRates(mContext, mResultReceiver, workoutTag);
+        return mData;
     }
 }

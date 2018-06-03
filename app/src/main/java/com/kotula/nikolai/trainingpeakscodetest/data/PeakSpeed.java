@@ -3,6 +3,8 @@ package com.kotula.nikolai.trainingpeakscodetest.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Objects;
+
 /**
  * Immutable POJO for encapsulating the Peak Speed data from the Workout REST result.
  */
@@ -99,5 +101,25 @@ public class PeakSpeed implements Parcelable {
         builder.append(lineSeparator);
 
         return builder.toString();
+    }
+
+    private boolean equals(PeakSpeed other) {
+        return (other.getBegin() == begin) &&
+                (other.getEnd() == end) &&
+                (other.getInterval() == interval) &&
+                (other.getValue() == value);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof PeakSpeed))
+            return false;
+
+        return this.equals((PeakSpeed) obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(begin, end, interval, value);
     }
 }

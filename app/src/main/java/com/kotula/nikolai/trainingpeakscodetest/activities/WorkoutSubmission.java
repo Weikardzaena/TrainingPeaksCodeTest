@@ -24,6 +24,10 @@ public class WorkoutSubmission extends AppCompatActivity {
         mWorkoutTagText = findViewById(R.id.editText_workoutTag);
     }
 
+    /**
+     * Button handler for the "Get Workout" button.
+     * @param view The Button view.
+     */
     public void getWorkout(View view) {
 
         // Don't continue if something went wrong with the layout:
@@ -31,6 +35,7 @@ public class WorkoutSubmission extends AppCompatActivity {
             Intent workoutExplorerIntent = new Intent(this, WorkoutExplorer.class);
 
             // Put the workout tag text as the data to pass to the explorer activity:
+            // TODO:  Verify null String is handled gracefully
             workoutExplorerIntent.putExtra(WORKOUT_TAG, mWorkoutTagText.getText().toString());
             startActivity(workoutExplorerIntent);
         }

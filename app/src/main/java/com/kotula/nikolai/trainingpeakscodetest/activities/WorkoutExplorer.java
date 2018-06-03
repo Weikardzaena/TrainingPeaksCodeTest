@@ -11,9 +11,10 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 
 import com.kotula.nikolai.trainingpeakscodetest.R;
+import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
+import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakHeartRateFragment;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakSpeedFragment;
-import com.kotula.nikolai.trainingpeakscodetest.fragments.dummy.DummyContent;
 
 public class WorkoutExplorer extends AppCompatActivity
                              implements PeakHeartRateFragment.OnListFragmentInteractionListener,
@@ -41,14 +42,14 @@ public class WorkoutExplorer extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_workout_explorer);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -60,7 +61,13 @@ public class WorkoutExplorer extends AppCompatActivity
     }
 
     @Override
-    public void onListFragmentInteraction(DummyContent.DummyItem dummyItem)
+    public void onListFragmentInteraction(PeakHeartRate peakHeartRate)
+    {
+        // For now, do nothing.
+    }
+
+    @Override
+    public void onListFragmentInteraction(PeakSpeed peakSpeed)
     {
         // For now, do nothing.
     }
@@ -71,15 +78,17 @@ public class WorkoutExplorer extends AppCompatActivity
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
             if (position == 0) {
+                // TODO:  Verify null String is handled gracefully
                 return PeakHeartRateFragment.newInstance(mWorkoutTag);
             } else if (position == 1) {
+                // TODO:  Verify null String is handled gracefully
                 return PeakSpeedFragment.newInstance(mWorkoutTag);
             }
 

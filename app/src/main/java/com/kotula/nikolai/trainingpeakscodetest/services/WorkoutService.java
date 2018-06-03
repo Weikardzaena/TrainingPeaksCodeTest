@@ -54,6 +54,7 @@ public class WorkoutService extends IntentService {
      */
     // TODO: Customize helper method
     public static void startActionFetchPeakHeartRates(Context context, WorkoutResultReceiver receiver, String workoutTag) {
+        // TODO:  Verify null String is handled gracefully
         Intent intent = new Intent(context, WorkoutService.class);
         intent.setAction(ACTION_FETCH_PEAK_HEART_RATES);
         intent.putExtra(EXTRA_WORKOUT_TAG, workoutTag);
@@ -69,6 +70,7 @@ public class WorkoutService extends IntentService {
      */
     // TODO: Customize helper method
     public static void startActionFetchPeakSpeeds(Context context, WorkoutResultReceiver receiver, String workoutTag) {
+        // TODO:  Verify null String is handled gracefully
         Intent intent = new Intent(context, WorkoutService.class);
         intent.setAction(ACTION_FETCH_PEAK_SPEEDS);
         intent.putExtra(EXTRA_WORKOUT_TAG, workoutTag);
@@ -83,9 +85,11 @@ public class WorkoutService extends IntentService {
             if ((mResultReceiver != null) && (mWorkoutRepo != null)) {
                 final String action = intent.getAction();
                 if (ACTION_FETCH_PEAK_HEART_RATES.equals(action)) {
+                    // TODO:  Verify null String is handled gracefully
                     final String workoutTag = intent.getStringExtra(EXTRA_WORKOUT_TAG);
                     handleActionFetchPeakHeartRates(workoutTag);
                 } else if (ACTION_FETCH_PEAK_SPEEDS.equals(action)) {
+                    // TODO:  Verify null String is handled gracefully
                     final String workoutTag = intent.getStringExtra(EXTRA_WORKOUT_TAG);
                     handleActionFetchPeakSpeeds(workoutTag);
                 }

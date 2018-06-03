@@ -7,4 +7,7 @@
     <string name="title_activity_workout_explorer">WorkoutExplorer</string>
     <string name="lbl_peakHeartRate">Peak Heart Rate</string>
     <string name="lbl_peakSpeed">Peak Speed</string>
+    <string name="lbl_peak">Peak</string>
+    <string name="lbl_min_per_mile">min/mi</string>
+    <string name="lbl_bpm">BPM</string>
 </resources>
