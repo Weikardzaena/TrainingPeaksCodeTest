@@ -4,15 +4,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".WorkoutSubmission">
+    tools:context=".activities.WorkoutSubmission">
 
-    <TextView
+    <Button
+        android:id="@+id/btn_getWorkout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginEnd="131dp"
+        android:layout_marginLeft="132dp"
+        android:layout_marginRight="131dp"
+        android:layout_marginStart="132dp"
+        android:layout_marginTop="45dp"
+        android:onClick="getWorkout"
+        android:text="@string/lbl_getWorkout"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_workoutTag" />
 
+    <EditText
+        android:id="@+id/editText_workoutTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="45dp"
+        android:hint="@string/hint_workoutTag"
+        android:inputType="textNoSuggestions"
+        android:text="@string/default_workoutTag"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constrainedWidth="true"/>
 </android.support.constraint.ConstraintLayout>
