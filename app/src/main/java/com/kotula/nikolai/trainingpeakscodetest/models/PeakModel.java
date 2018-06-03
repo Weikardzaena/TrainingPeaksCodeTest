@@ -35,7 +35,10 @@ public abstract class PeakModel<T> extends ViewModel implements WorkoutResultRec
     public abstract LiveData<List<T>> getData(String workoutTag);
 
     /**
-     * Initializes parameters for this {@link ViewModel}.  This MUST be called after getting an instance of this from {@link android.arch.lifecycle.ViewModelProviders}.
+     * Initializes parameters for this {@link ViewModel}.
+     * <p/>
+     * This MUST be called after getting an
+     * instance of this from {@link android.arch.lifecycle.ViewModelProviders}.
      * @param context The application context.
      */
     public void init(Context context) {
@@ -44,7 +47,8 @@ public abstract class PeakModel<T> extends ViewModel implements WorkoutResultRec
     }
 
     /**
-     * Binds to the ON_CREATE Lifecycle event for activities/fragments to instantiate the Result Receiver.
+     * Binds to the ON_CREATE Lifecycle event for activities/fragments to instantiate the Result
+     * Receiver.
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     public void createReceiver() {
@@ -54,8 +58,9 @@ public abstract class PeakModel<T> extends ViewModel implements WorkoutResultRec
     }
 
     /**
-     * Binds to the ON_RESUME Lifecycle event for activities/fragments to update the Result Receiver with our instance.
-     * This is necessary because the reference to this will be removed from the Result Receiver ON_PAUSE.
+     * Binds to the ON_RESUME Lifecycle event for activities/fragments to update the Result Receiver
+     * with our instance.  This is necessary because the reference to this will be removed from the
+     * Result Receiver ON_PAUSE.
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     public void enableReceiver() {
@@ -65,8 +70,9 @@ public abstract class PeakModel<T> extends ViewModel implements WorkoutResultRec
     }
 
     /**
-     * Binds to the ON_PAUSE Lifecycle event for activities/fragments to remove the reference to this from the Result Receiver.
-     * This is necessary because if the reference to this is left hanging, when the activity/fragment is destroyed, the references could leak.
+     * Binds to the ON_PAUSE Lifecycle event for activities/fragments to remove the reference to
+     * this from the Result Receiver.  This is necessary because if the reference to this is left
+     * hanging, when the activity/fragment is destroyed, the references could leak.
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     public void disableReceiver() {
@@ -75,6 +81,11 @@ public abstract class PeakModel<T> extends ViewModel implements WorkoutResultRec
         }
     }
 
+    /**
+     * Binds to the ON_DESTROY Lifecycle event for activities/fragments to remove the reference to
+     * the application context.  This is to avoid leaking the context of the activity/fragment which
+     * would prevent the destroyed activity/fragment from being garbage collected.
+     */
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     public void removeContext() {
         mContext = null;

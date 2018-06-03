@@ -36,23 +36,29 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
 
     /**
      * Fetches a {@link List} of {@link PeakHeartRate} objects from the data source.
+     * <p/>
+     * This is a BLOCKING operation.
+     * @param workoutTag The Workout Tag to fetch from the endpoint.
      * @return The {@link List} of {@link PeakHeartRate} objects from the data source.
      */
     @Override
     public List<PeakHeartRate> getPeakHeartRates(String workoutTag) {
         Log.d(TAG, "getPeakSpeeds()");
-        fetchData((workoutTag == null) ? "" : workoutTag);
+        fetchData(workoutTag);
         return mPeakHeartRates;
     }
 
     /**
      * Fetches a {@link List} of {@link PeakSpeed} objects from the data source.
+     * <p/>
+     * This is a BLOCKING operation.
+     * @param workoutTag The Workout Tag to fetch from the endpoint.
      * @return The {@link List} of {@link PeakSpeed} objects from the data source.
      */
     @Override
     public List<PeakSpeed> getPeakSpeeds(String workoutTag) {
         Log.d(TAG, "getPeakSpeeds()");
-        fetchData((workoutTag == null) ? "" : workoutTag);
+        fetchData(workoutTag);
         return mPeakSpeeds;
     }
 
@@ -276,7 +282,7 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
 
         // Assign the URL object:
         try {
-            endpoint = new URL(ENDPOINT.concat(workoutTag));
+            endpoint = new URL(ENDPOINT.concat((workoutTag == null) ? "" : workoutTag));
         } catch (MalformedURLException ex) {
             Log.e(TAG, ex.getMessage());
             return;
@@ -308,12 +314,10 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
         } catch (IOException ex) {
             // A stream read error has occurred:
             Log.e(TAG, ex.getMessage());
-            return;
         } catch (IllegalStateException ex) {
             // This is thrown when the JsonReader tries to read something it doesn't understand:
             Log.e(TAG, ex.getMessage());
             Log.e(TAG, "Malformed JSON!");
-            return;
         } finally {
             // Close the readers:
             if (jsonReader != null) {

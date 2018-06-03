@@ -91,6 +91,9 @@ public class PeakSpeedFragment extends Fragment implements LifecycleOwner {
                         mViewAdapter = new PeakSpeedRecyclerViewAdapter(peakSpeeds, mListener);
                         recyclerView.setAdapter(mViewAdapter);
                     } else {
+                        // For now, the entire data set is being updated at once, so we notify the
+                        // view adapter to refresh everything.  This should be changed to something
+                        // like notifyItemChanged(index) if individual items are changing.
                         mViewAdapter.notifyDataSetChanged();
                     }
                 }
