@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
-import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakHeartRateFragment.OnListFragmentInteractionListener;
+import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakFragment.OnListFragmentInteractionListener;
 import com.kotula.nikolai.trainingpeakscodetest.R;
 
 import java.util.ArrayList;
@@ -23,9 +23,9 @@ import java.util.Locale;
 public class PeakHeartRateRecyclerViewAdapter extends RecyclerView.Adapter<PeakHeartRateRecyclerViewAdapter.ViewHolder> {
 
     private final List<PeakHeartRate> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final OnListFragmentInteractionListener<PeakHeartRate> mListener;
 
-    PeakHeartRateRecyclerViewAdapter(List<PeakHeartRate> items, OnListFragmentInteractionListener listener) {
+    PeakHeartRateRecyclerViewAdapter(List<PeakHeartRate> items, OnListFragmentInteractionListener<PeakHeartRate> listener) {
         if (items != null) {
             mValues = items;
         } else {

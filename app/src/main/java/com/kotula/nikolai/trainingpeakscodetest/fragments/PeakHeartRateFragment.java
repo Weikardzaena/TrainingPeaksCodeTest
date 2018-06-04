@@ -29,12 +29,10 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class PeakHeartRateFragment extends Fragment implements LifecycleOwner {
+public class PeakHeartRateFragment extends PeakFragment {
 
     private static final String TAG = "PeakHeartRateFragment";
 
-    private LifecycleRegistry mLifecycleRegistry = null;
-    private OnListFragmentInteractionListener mListener = null;
     private PeakHeartRateRecyclerViewAdapter mViewAdapter = null;
     private HeartRateModel mHeartRateModel = null;
 
@@ -52,15 +50,6 @@ public class PeakHeartRateFragment extends Fragment implements LifecycleOwner {
         args.putString(WorkoutSubmission.WORKOUT_TAG, workoutTag);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
-        // Register this fragment to trigger the ON_CREATE Lifecycle events for listeners:
-        mLifecycleRegistry = new LifecycleRegistry(this);
-        mLifecycleRegistry.markState(Lifecycle.State.CREATED);
     }
 
     @Override
@@ -107,57 +96,5 @@ public class PeakHeartRateFragment extends Fragment implements LifecycleOwner {
             mHeartRateModel.getData(workoutTag).observe(this, liveDataObserver);
         }
         return view;
-    }
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnListFragmentInteractionListener) {
-            Log.d(TAG, "onAttach()");
-            mListener = (OnListFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mLifecycleRegistry.markState(Lifecycle.State.RESUMED);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        // Going from RESUMED to STARTED triggers the ON_PAUSED Lifecycle event.
-        mLifecycleRegistry.markState(Lifecycle.State.STARTED);
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
-    }
-
-    @Override
-    public void onDestroy() {
-        mLifecycleRegistry.markState(Lifecycle.State.DESTROYED);
-        super.onDestroy();
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnListFragmentInteractionListener {
-        void onListFragmentInteraction(PeakHeartRate item);
     }
 }

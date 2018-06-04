@@ -3,14 +3,13 @@ package com.kotula.nikolai.trainingpeakscodetest.fragments;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
-import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakSpeedFragment.OnListFragmentInteractionListener;
+import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakFragment.OnListFragmentInteractionListener;
 import com.kotula.nikolai.trainingpeakscodetest.R;
 
 import java.util.ArrayList;
@@ -24,9 +23,9 @@ import java.util.Locale;
 public class PeakSpeedRecyclerViewAdapter extends RecyclerView.Adapter<PeakSpeedRecyclerViewAdapter.ViewHolder> {
 
     private final List<PeakSpeed> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final OnListFragmentInteractionListener<PeakSpeed> mListener;
 
-    PeakSpeedRecyclerViewAdapter(List<PeakSpeed> items, OnListFragmentInteractionListener listener) {
+    PeakSpeedRecyclerViewAdapter(List<PeakSpeed> items, OnListFragmentInteractionListener<PeakSpeed> listener) {
         if (items != null) {
             mValues = items;
         } else {
