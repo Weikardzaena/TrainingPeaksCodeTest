@@ -30,8 +30,26 @@ public class HeartRateModel extends PeakModel<PeakHeartRate> implements WorkoutR
      */
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
-        Log.d(TAG, "onReceiveResult()");
         ArrayList<PeakHeartRate> heartRates = resultData.getParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE);
+
+        // As of now, the Model Statuses match the Service statuses, but that does not have to be true in the future.
+        switch (resultCode) {
+            case WorkoutService.RESULT_SUCCESS:
+                mStatus.setValue(ModelStatus.FINISHED_SUCCESS);
+                break;
+            case WorkoutService.RESULT_CONNECTION_FAILURE:
+                mStatus.setValue(ModelStatus.FINISHED_ERROR_CONNECTION);
+                break;
+            case WorkoutService.RESULT_PARSE_FAILURE:
+                mStatus.setValue(ModelStatus.FINISHED_ERROR_DATA_FORMAT);
+                break;
+            case WorkoutService.RESULT_UNKNOWN_FAILURE:
+                mStatus.setValue(ModelStatus.FINISHED_ERROR_UNKNOWN);
+                break;
+            default:
+                mStatus.setValue(ModelStatus.FINISHED_SUCCESS);
+                break;
+        }
 
         // The following set of logic to remove duplicates and sort the array is not optimized, but
         // considering that this is at the tail end of a comparatively very time-consuming operation
@@ -57,6 +75,11 @@ public class HeartRateModel extends PeakModel<PeakHeartRate> implements WorkoutR
      */
     @Override
     public LiveData<List<PeakHeartRate>> getData(String workoutTag) {
+
+        // Set the status to fetching:
+        mStatus.setValue(ModelStatus.FETCHING);
+
+        // Start the IntentService to asynchronously fetch the data:
         WorkoutService.startActionFetchPeakHeartRates(mContext, mResultReceiver, workoutTag);
         return mData;
     }

@@ -11,14 +11,12 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 
 import com.kotula.nikolai.trainingpeakscodetest.R;
-import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
-import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
+import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakFragment;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakHeartRateFragment;
 import com.kotula.nikolai.trainingpeakscodetest.fragments.PeakSpeedFragment;
 
 public class WorkoutExplorer extends AppCompatActivity
-                             implements PeakHeartRateFragment.OnListFragmentInteractionListener,
-                                        PeakSpeedFragment.OnListFragmentInteractionListener {
+                             implements PeakFragment.OnListFragmentInteractionListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -60,14 +58,7 @@ public class WorkoutExplorer extends AppCompatActivity
     }
 
     @Override
-    public void onListFragmentInteraction(PeakHeartRate peakHeartRate)
-    {
-        // For now, do nothing.
-    }
-
-    @Override
-    public void onListFragmentInteraction(PeakSpeed peakSpeed)
-    {
+    public void onListFragmentInteraction(Object item) {
         // For now, do nothing.
     }
 

@@ -10,4 +10,9 @@
     <string name="lbl_peak">Peak</string>
     <string name="lbl_min_per_mile">min/mi</string>
     <string name="lbl_bpm">BPM</string>
+    <string name="lbl_error_connection">Oops, I lost my connection to the server.  If this problem persists, please verify the Workout Tag is correct or check your internet connection.</string>
+    <string name="lbl_error_parse">Oops, I couldn\'t display the Workout data I found.  If this problem persists, please verify the Workout Tag is correct.</string>
+    <string name="lbl_error_unknown">Oops, something went wrong and I can\'t display your Workout.  If this problem persists, please verify the Workout Tag is correct or check your internet connection.</string>
+    <string name="lbl_retry">Retry</string>
+    <string name="lbl_go_back">Go Back</string>
 </resources>

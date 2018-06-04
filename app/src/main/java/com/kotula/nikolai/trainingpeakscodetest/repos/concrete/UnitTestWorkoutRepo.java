@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
+import com.kotula.nikolai.trainingpeakscodetest.repos.ResultCode;
 import com.kotula.nikolai.trainingpeakscodetest.repos.interfaces.IWorkoutRepo;
 
 import java.util.ArrayList;
@@ -18,10 +19,11 @@ public class UnitTestWorkoutRepo implements IWorkoutRepo {
      * <p/>
      * This is a BLOCKING operation.
      * @param workoutTag The Workout Tag to fetch from the endpoint.
-     * @return The {@link List} of {@link PeakHeartRate} objects from the data source.
+     * @param outData The {@link List} of {@link PeakHeartRate} objects that will be filled with the fetched data.
+     * @return A code indicating the result of the operation.
      */
     @Override
-    public List<PeakHeartRate> getPeakHeartRates(String workoutTag) {
+    public ResultCode getPeakHeartRates(String workoutTag, List<PeakHeartRate> outData) {
         Log.d(TAG, "getPeakSpeeds()");
 
         ArrayList<PeakHeartRate> heartRates = new ArrayList<>();
@@ -56,7 +58,8 @@ public class UnitTestWorkoutRepo implements IWorkoutRepo {
 
         // The ending order should always be the same.  This tests for that:
         Collections.shuffle(heartRates);
-        return heartRates;
+        outData.addAll(heartRates);
+        return ResultCode.SUCCESS;
     }
 
     /**
@@ -64,10 +67,11 @@ public class UnitTestWorkoutRepo implements IWorkoutRepo {
      * <p/>
      * This is a BLOCKING operation.
      * @param workoutTag The Workout Tag to fetch from the endpoint.
-     * @return The {@link List} of {@link PeakSpeed} objects from the data source.
+     * @param outData The {@link List} of {@link PeakSpeed} objects that will be filled with the fetched data.
+     * @return A code indicating the result of the operation.
      */
     @Override
-    public List<PeakSpeed> getPeakSpeeds(String workoutTag) {
+    public ResultCode getPeakSpeeds(String workoutTag, List<PeakSpeed> outData) {
         Log.d(TAG, "getPeakSpeeds()");
         ArrayList<PeakSpeed> speeds = new ArrayList<>();
 
@@ -103,6 +107,7 @@ public class UnitTestWorkoutRepo implements IWorkoutRepo {
 
         // The ending order should always be the same.  This tests for that:
         Collections.shuffle(speeds);
-        return speeds;
+        outData.addAll(speeds);
+        return ResultCode.SUCCESS;
     }
 }
