@@ -20,6 +20,7 @@ public abstract class PeakModel<T> extends ViewModel implements WorkoutResultRec
     protected Context mContext; // So long as we always remember to null this ON_DESTROY lifecycle event, holding a reference to the Context is fine.
     protected WorkoutResultReceiver mResultReceiver;
     protected MutableLiveData<List<T>> mData = new MutableLiveData<>();
+    protected MutableLiveData<ModelStatus> mStatus = new MutableLiveData<>();
 
     /**
      * Callback for when the ResultReceiver has finished its work and has results.
@@ -33,6 +34,14 @@ public abstract class PeakModel<T> extends ViewModel implements WorkoutResultRec
      * @param workoutTag The Workout Tag to fetch from the data source.
      */
     public abstract LiveData<List<T>> getData(String workoutTag);
+
+    /**
+     * Getter so callers can observe changes in Model status.
+     * @return The {@link LiveData} that updates the Model's Status.
+     */
+    public LiveData<ModelStatus> getStatus() {
+        return mStatus;
+    }
 
     /**
      * Initializes parameters for this {@link ViewModel}.

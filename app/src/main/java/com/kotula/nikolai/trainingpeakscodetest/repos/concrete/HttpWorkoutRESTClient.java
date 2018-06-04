@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
+import com.kotula.nikolai.trainingpeakscodetest.repos.ResultCode;
 import com.kotula.nikolai.trainingpeakscodetest.repos.interfaces.IWorkoutRepo;
 
 import java.io.IOException;
@@ -39,13 +40,15 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
      * <p/>
      * This is a BLOCKING operation.
      * @param workoutTag The Workout Tag to fetch from the endpoint.
-     * @return The {@link List} of {@link PeakHeartRate} objects from the data source.
+     * @param outData The {@link List} of {@link PeakHeartRate} objects that will be filled with the fetched data.
+     * @return A code indicating the result of the operation.
      */
     @Override
-    public List<PeakHeartRate> getPeakHeartRates(String workoutTag) {
+    public ResultCode getPeakHeartRates(String workoutTag, List<PeakHeartRate> outData) {
         Log.d(TAG, "getPeakSpeeds()");
-        fetchData(workoutTag);
-        return mPeakHeartRates;
+        ResultCode result = fetchData(workoutTag);
+        outData.addAll(mPeakHeartRates);
+        return result;
     }
 
     /**
@@ -53,32 +56,31 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
      * <p/>
      * This is a BLOCKING operation.
      * @param workoutTag The Workout Tag to fetch from the endpoint.
-     * @return The {@link List} of {@link PeakSpeed} objects from the data source.
+     * @param outData The {@link List} of {@link PeakSpeed} objects that will be filled with the fetched data.
+     * @return A code indicating the result of the operation.
      */
     @Override
-    public List<PeakSpeed> getPeakSpeeds(String workoutTag) {
+    public ResultCode getPeakSpeeds(String workoutTag, List<PeakSpeed> outData) {
         Log.d(TAG, "getPeakSpeeds()");
-        fetchData(workoutTag);
-        return mPeakSpeeds;
+        ResultCode result = fetchData(workoutTag);
+        outData.addAll(mPeakSpeeds);
+        return result;
     }
 
     /**
-     * Parses the entire JSON document for Peak Heart Rates and Peak Speeds.
+     * Recursively parses the JSON OBJECT for Peak Heart Rates and Peak Speeds.
      * <p>
      *     NOTE:  This method assumes that the reader is at a valid starting position.  I.E.
-     *     reader.beginObject() must be called before this method is invoked.
+     *     reader.beginObject() must be called BEFORE AND AFTER this method is invoked.
      * </p>
      * <p>
      *     This algorithm is basically a depth-first tree search.
      * </p>
-     * <p>
-     *     TODO:  Nested JSON ARRAYS are not handled well, so it is possible to miss data.
-     * </p>
-     * @param reader The {@link JsonReader} that begins the JSON DOCUMENT.
+     * @param reader The {@link JsonReader} that begins the JSON OBJECT.
      * @throws IOException
      * @throws IllegalStateException
      */
-    private void parseResult(JsonReader reader) throws IOException, IllegalStateException {
+    private void parseJsonObjectForData(JsonReader reader) throws IOException, IllegalStateException {
         if (reader == null)
             return;
 
@@ -120,42 +122,65 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
 
                 // We found an OBJECT, so recursively search it for 'peakSpeeds':
                 reader.beginObject();
-                parseResult(reader); // Recursive call
+                parseJsonObjectForData(reader); // Recursive call
                 reader.endObject();
 
             } else if (peekVal == JsonToken.BEGIN_ARRAY) {
 
-                /* ARRAY are dealt with specially because they can contain any type of VALUE. */
-
-                // Begin the ARRAY:
+                // We found an ARRAY, so search it recursively:
                 reader.beginArray();
-
-                // Inspect the first VALUE of the ARRAY:
-                peekVal = reader.peek();
-
-                if (peekVal == JsonToken.BEGIN_OBJECT) {
-                    while (reader.hasNext() && (reader.peek() != JsonToken.END_ARRAY)) {
-
-                        // We found an ARRAY of OBJECTS.  Inspect them all!
-                        reader.beginObject();
-                        parseResult(reader);
-                        reader.endObject();
-                    }
-                } else if (peekVal == JsonToken.BEGIN_ARRAY) {
-                    while (reader.hasNext() && (reader.peek() != JsonToken.END_ARRAY)) {
-                        // We found an ARRAY of ARRAYS.  For now, just skip the darn thing.
-                        // TODO:  Recursively check arrays for what we're looking for.
-                        reader.skipValue();
-                    }
-                } else {
-                    // we have found an ARRAY of other types, so skip them all:
-                    while (reader.hasNext() && (reader.peek() != JsonToken.END_ARRAY)) {
-                        reader.skipValue();
-                    }
-                }
-
-                // Don't forget to end the ARRAY:
+                parseJsonArrayForData(reader); // Recursive call
                 reader.endArray();
+
+            } else {
+
+                // Default case:
+                reader.skipValue();
+            }
+        }
+    }
+
+    /**
+     * Recursively parses a JSON ARRAY for Peak Heart Rates and Peak Speeds.
+     * <p>
+     *     NOTE:  This method assumes that the reader is at a valid starting position.  I.E.
+     *     reader.beginArray() must be called BEFORE AND AFTER this method is invoked.
+     * </p>
+     * <p>
+     *     This algorithm is basically a depth-first tree search.
+     * </p>
+     * @param reader The {@link JsonReader} that begins the JSON ARRAY.
+     * @throws IOException
+     * @throws IllegalStateException
+     */
+    private void parseJsonArrayForData(JsonReader reader) throws IOException, IllegalStateException {
+        if (reader == null)
+            return;
+
+        while (reader.hasNext()) {
+            // Peek the next JSON type:
+            JsonToken peekVal = reader.peek();
+
+            // If we have reached the end of the OBJECT, return.
+            if (peekVal == JsonToken.END_ARRAY)
+                return;
+
+            // JSON ARRAYS cannot contain NAMES, so we don't check for names in this method.
+
+            if (peekVal == JsonToken.BEGIN_OBJECT) {
+
+                // We found an OBJECT, so recursively search it for 'peakSpeeds':
+                reader.beginObject();
+                parseJsonObjectForData(reader); // Recursive call
+                reader.endObject();
+
+            } else if (peekVal == JsonToken.BEGIN_ARRAY) {
+
+                // We found nested ARRAYS, so search the ARRAY recursively:
+                reader.beginArray();
+                parseJsonArrayForData(reader); // Recursive call
+                reader.endArray();
+
             } else {
 
                 // Default case:
@@ -271,8 +296,9 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
     /**
      * Populates the lists of Peak Heart Rates and Peak Speeds from the JSON provided at the REST endpoint.
      * @param workoutTag The Workout Tag to use in the REST request.
+     * @return A code indicating the result of the operation.
      */
-    private void fetchData(String workoutTag) {
+    private ResultCode fetchData(String workoutTag) {
         // Reset old data if we still have it:
         mPeakHeartRates.clear();
         mPeakSpeeds.clear();
@@ -285,7 +311,7 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
             endpoint = new URL(ENDPOINT.concat((workoutTag == null) ? "" : workoutTag));
         } catch (MalformedURLException ex) {
             Log.e(TAG, ex.getMessage());
-            return;
+            return ResultCode.FAIL_CONNECTION;
         }
 
         // I'm not sure whether closing the JsonReader will close the underlying InputStream as well
@@ -295,29 +321,52 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
         JsonReader jsonReader = null;
 
         // Open the TCP connection and read the input stream:
-        // TODO:  Handle error responses from the connection (e.g. 404, etc.).
         try {
             // Open the TCP connection:
             urlConnection = (HttpsURLConnection)endpoint.openConnection();
+            urlConnection.connect();
 
             // Initialize the streams:
             inputStream = urlConnection.getInputStream();
             streamReader = new InputStreamReader(inputStream, "UTF-8");
             jsonReader = new JsonReader(streamReader);
 
-            // Don't forget to begin the JSON OBJECT before calling parseResult()!
+            // Don't forget to begin the JSON OBJECT before calling parseJsonObjectForData()!
             jsonReader.beginObject();
 
             // Parse the JSON
-            parseResult(jsonReader);
+            parseJsonObjectForData(jsonReader);
 
         } catch (IOException ex) {
+
             // A stream read error has occurred:
             Log.e(TAG, ex.getMessage());
+
+            // IOExceptions happen when the Stream fails to open, which usually means an HTTP error
+            // has occurred:
+            if (urlConnection != null) {
+                InputStream errorStream = urlConnection.getErrorStream();
+                if (errorStream != null) {
+                    return ResultCode.FAIL_CONNECTION;
+                }
+            }
+
+            // If there is no Error Stream, then return generic Stream-related failure code:
+            return ResultCode.FAIL_STREAM;
+
         } catch (IllegalStateException ex) {
+
             // This is thrown when the JsonReader tries to read something it doesn't understand:
             Log.e(TAG, ex.getMessage());
-            Log.e(TAG, "Malformed JSON!");
+            return ResultCode.FAIL_PARSE;
+
+        } catch (Exception ex) {
+
+            // Catch-all case for all errors:
+            // Mostly this is here to catch the case when the endpoint is not HTTP.
+            Log.e(TAG, ex.getMessage());
+            return ResultCode.FAIL_UNKNOWN;
+
         } finally {
             // Close the readers:
             if (jsonReader != null) {
@@ -347,5 +396,8 @@ public class HttpWorkoutRESTClient implements IWorkoutRepo {
                 urlConnection.disconnect();
             }
         }
+
+        // If we've reached this, nothing went wrong:
+        return ResultCode.SUCCESS;
     }
 }
