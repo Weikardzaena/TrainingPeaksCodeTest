@@ -117,19 +117,33 @@ public class PeakHeartRateFragment extends PeakFragment {
         return view;
     }
 
+    /**
+     * Mainly here to handle the {@link ErrorDialog} Intents.
+     * @param requestCode The optional request code to sync up request types (not used in this case).
+     * @param resultCode The system-provided result of the activity's result which indicates success or failure.
+     * @param data The {@link Intent} to execute.
+     */
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
-            if (data != null) { // Not sure if I need to check this, but I'm doing it anyway.
-                int intentCode = data.getIntExtra(INTENT, 0);
+            if (data != null) { // Not sure if I actually need to check this if the result is OK.
+
+                int intentCode = data.getIntExtra(PeakFragment.INTENT_TAG, 0);
+
                 switch (intentCode) {
-                    case INTENT_REFRESH:
+                    case PeakFragment.INTENT_REFRESH:
+                        // Refresh the data:
                         mHeartRateModel.getData(mWorkoutTag);
                         break;
-                    case INTENT_FINISH:
-                        getActivity().finish();
+
+                    case PeakFragment.INTENT_FINISH:
+                        // The user clicked "Go Back," so we end the activity:
+                        if (getActivity() != null)
+                            getActivity().finish();
                         break;
+
                     default:
+                        // Unknown intent code.
                         break;
                 }
             }

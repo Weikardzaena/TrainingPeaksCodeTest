@@ -16,7 +16,7 @@ import com.kotula.nikolai.trainingpeakscodetest.activities.WorkoutSubmission;
 public abstract class PeakFragment extends Fragment implements LifecycleOwner {
     private static final String TAG = "PeakFragment";
 
-    public static final String INTENT = "com.kotula.nikolai.trainingpeakscodetest.fragments.PeakFragment.INTENT";
+    public static final String INTENT_TAG = "com.kotula.nikolai.trainingpeakscodetest.fragments.PeakFragment.INTENT_TAG";
     public static final int INTENT_REFRESH = 100;
     public static final int INTENT_FINISH = 200;
 
@@ -24,21 +24,40 @@ public abstract class PeakFragment extends Fragment implements LifecycleOwner {
     protected PeakFragment.OnListFragmentInteractionListener mListener;
     protected String mWorkoutTag;
 
+    /**
+     * Adds an {@link ErrorDialog} to the foreground and on top of the fragment transaction stack.
+     * @param errorMsg The error message to display on the dialog.
+     */
     protected void showErrorDialog(String errorMsg) {
         if (getFragmentManager() != null) {
+
+            // Begin transaction:
             FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+            // If we already have the same dialog up for some reason, replace it:
             Fragment prev = getFragmentManager().findFragmentByTag(ErrorDialog.ERROR_DIALOG_TAG);
             if (prev != null) {
                 transaction.remove(prev);
             }
 
+            // Create the instance:
             ErrorDialog dialog = ErrorDialog.newInstance(errorMsg);
             dialog.setTargetFragment(this, 0);  // the Request code is optional.
+
+            // Show the dialog:
             dialog.show(getFragmentManager(), ErrorDialog.ERROR_DIALOG_TAG);
             transaction.commit();
         }
     }
 
+    /**
+     * Mainly here to handle the {@link ErrorDialog} Intents.
+     * <p/>
+     * It is up to the implementers to decide what to do with the {@link Intent}.
+     * @param requestCode The optional request code to sync up request types (not used in this case).
+     * @param resultCode The system-provided result of the activity's result which indicates success or failure.
+     * @param data The {@link Intent} to execute.
+     */
     @Override
     public abstract void onActivityResult(int requestCode, int resultCode, Intent data);
 

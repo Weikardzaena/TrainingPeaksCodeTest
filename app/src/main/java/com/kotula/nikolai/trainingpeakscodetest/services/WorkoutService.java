@@ -29,6 +29,7 @@ public class WorkoutService extends IntentService {
     private static final String ACTION_FETCH_PEAK_HEART_RATES = "com.kotula.nikolai.trainingpeakscodetest.services.action.FETCH_PEAK_HEART_RATES";
     private static final String ACTION_FETCH_PEAK_SPEEDS = "com.kotula.nikolai.trainingpeakscodetest.services.action.FETCH_PEAK_SPEEDS";
 
+    // These aren't an Enum because we need integers for the result codes:
     public static final int RESULT_SUCCESS = 0;
     public static final int RESULT_CONNECTION_FAILURE = -100;
     public static final int RESULT_PARSE_FAILURE = -200;
@@ -111,6 +112,7 @@ public class WorkoutService extends IntentService {
             ArrayList<PeakHeartRate> peakHeartRates = new ArrayList<>();
             ResultCode resultCode = mWorkoutRepo.getPeakHeartRates(workoutTag, peakHeartRates);
 
+            // Build the Service result codes from the Repo result codes:
             switch (resultCode) {
                 case FAIL_CONNECTION:
                     statusCode = RESULT_CONNECTION_FAILURE;

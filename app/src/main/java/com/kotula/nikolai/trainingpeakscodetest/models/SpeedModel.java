@@ -32,6 +32,7 @@ public class SpeedModel extends PeakModel<PeakSpeed> implements WorkoutResultRec
     public void onReceiveResult(int resultCode, Bundle resultData) {
         ArrayList<PeakSpeed> peakSpeeds = resultData.getParcelableArrayList(PeakSpeed.PARCEL_PEAK_SPEED);
 
+        // As of now, the Model Statuses match the Service statuses, but that does not have to be true in the future.
         switch (resultCode) {
             case WorkoutService.RESULT_SUCCESS:
                 mStatus.setValue(ModelStatus.FINISHED_SUCCESS);
@@ -74,7 +75,11 @@ public class SpeedModel extends PeakModel<PeakSpeed> implements WorkoutResultRec
      */
     @Override
     public LiveData<List<PeakSpeed>> getData(String workoutTag) {
+
+        // Set the status to fetching:
         mStatus.setValue(ModelStatus.FETCHING);
+
+        // Start the IntentService to asynchronously fetch the data:
         WorkoutService.startActionFetchPeakSpeeds(mContext, mResultReceiver, workoutTag);
         return mData;
     }

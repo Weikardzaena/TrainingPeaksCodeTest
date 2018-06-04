@@ -32,6 +32,7 @@ public class HeartRateModel extends PeakModel<PeakHeartRate> implements WorkoutR
     public void onReceiveResult(int resultCode, Bundle resultData) {
         ArrayList<PeakHeartRate> heartRates = resultData.getParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE);
 
+        // As of now, the Model Statuses match the Service statuses, but that does not have to be true in the future.
         switch (resultCode) {
             case WorkoutService.RESULT_SUCCESS:
                 mStatus.setValue(ModelStatus.FINISHED_SUCCESS);
@@ -74,7 +75,11 @@ public class HeartRateModel extends PeakModel<PeakHeartRate> implements WorkoutR
      */
     @Override
     public LiveData<List<PeakHeartRate>> getData(String workoutTag) {
+
+        // Set the status to fetching:
         mStatus.setValue(ModelStatus.FETCHING);
+
+        // Start the IntentService to asynchronously fetch the data:
         WorkoutService.startActionFetchPeakHeartRates(mContext, mResultReceiver, workoutTag);
         return mData;
     }
