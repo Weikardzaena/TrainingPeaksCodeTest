@@ -1,5 +1,6 @@
 package com.kotula.nikolai.trainingpeakscodetest.fragments;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.arch.lifecycle.Lifecycle;
 import android.arch.lifecycle.LifecycleOwner;
@@ -7,13 +8,39 @@ import android.arch.lifecycle.LifecycleRegistry;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
+
+import com.kotula.nikolai.trainingpeakscodetest.activities.WorkoutSubmission;
 
 public abstract class PeakFragment extends Fragment implements LifecycleOwner {
     private static final String TAG = "PeakFragment";
 
+    public static final String INTENT = "com.kotula.nikolai.trainingpeakscodetest.fragments.PeakFragment.INTENT";
+    public static final int INTENT_REFRESH = 100;
+    public static final int INTENT_FINISH = 200;
+
     protected LifecycleRegistry mLifecycleRegistry;
     protected PeakFragment.OnListFragmentInteractionListener mListener;
+    protected String mWorkoutTag;
+
+    protected void showErrorDialog(String errorMsg) {
+        if (getFragmentManager() != null) {
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+            Fragment prev = getFragmentManager().findFragmentByTag(ErrorDialog.ERROR_DIALOG_TAG);
+            if (prev != null) {
+                transaction.remove(prev);
+            }
+
+            ErrorDialog dialog = ErrorDialog.newInstance(errorMsg);
+            dialog.setTargetFragment(this, 0);  // the Request code is optional.
+            dialog.show(getFragmentManager(), ErrorDialog.ERROR_DIALOG_TAG);
+            transaction.commit();
+        }
+    }
+
+    @Override
+    public abstract void onActivityResult(int requestCode, int resultCode, Intent data);
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -34,6 +61,9 @@ public abstract class PeakFragment extends Fragment implements LifecycleOwner {
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
+        }
+        if (getArguments() != null) {
+            mWorkoutTag = getArguments().getString(WorkoutSubmission.WORKOUT_TAG);
         }
     }
 

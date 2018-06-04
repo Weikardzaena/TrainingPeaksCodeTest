@@ -1,7 +1,9 @@
 package com.kotula.nikolai.trainingpeakscodetest.fragments;
 
+import android.app.Activity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 import com.kotula.nikolai.trainingpeakscodetest.R;
 import com.kotula.nikolai.trainingpeakscodetest.activities.WorkoutSubmission;
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
+import com.kotula.nikolai.trainingpeakscodetest.models.ModelStatus;
 import com.kotula.nikolai.trainingpeakscodetest.models.SpeedModel;
 
 import java.util.List;
@@ -82,13 +85,54 @@ public class PeakSpeedFragment extends PeakFragment {
                 }
             };
 
+            final Observer<ModelStatus> modelStatusObserver = new Observer<ModelStatus>() {
+                @Override
+                public void onChanged(@Nullable ModelStatus modelStatus) {
+                    if (modelStatus != null) {
+                        switch (modelStatus) {
+                            case FETCHING:
+                                // TODO:  Show a spinner or something.
+                                break;
+                            case FINISHED_ERROR_CONNECTION:
+                                showErrorDialog(getString(R.string.lbl_error_connection));
+                                break;
+                            case FINISHED_ERROR_DATA_FORMAT:
+                                showErrorDialog(getString(R.string.lbl_error_parse));
+                                break;
+                            case FINISHED_ERROR_UNKNOWN:
+                                showErrorDialog(getString(R.string.lbl_error_unknown));
+                                break;
+                            default:
+                                // No error dialog because success.
+                                break;
+                        }
+                    }
+                }
+            };
+
             // Wire up the Model observer with the provided parameters:
-            String workoutTag = null;
-            if (getArguments() != null) {
-                workoutTag = getArguments().getString(WorkoutSubmission.WORKOUT_TAG);
-            }
-            mSpeedModel.getData(workoutTag).observe(this, liveDataObserver);
+            mSpeedModel.getStatus().observe(this, modelStatusObserver);
+            mSpeedModel.getData(mWorkoutTag).observe(this, liveDataObserver);
         }
         return view;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == Activity.RESULT_OK) {
+            if (data != null) { // Not sure if I need to check this, but I'm doing it anyway.
+                int intentCode = data.getIntExtra(INTENT, 0);
+                switch (intentCode) {
+                    case INTENT_REFRESH:
+                        mSpeedModel.getData(mWorkoutTag);
+                        break;
+                    case INTENT_FINISH:
+                        getActivity().finish();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
     }
 }

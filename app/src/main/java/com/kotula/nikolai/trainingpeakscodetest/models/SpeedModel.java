@@ -30,8 +30,25 @@ public class SpeedModel extends PeakModel<PeakSpeed> implements WorkoutResultRec
      */
     @Override
     public void onReceiveResult(int resultCode, Bundle resultData) {
-        Log.d(TAG, "onReceiveResult()");
         ArrayList<PeakSpeed> peakSpeeds = resultData.getParcelableArrayList(PeakSpeed.PARCEL_PEAK_SPEED);
+
+        switch (resultCode) {
+            case WorkoutService.RESULT_SUCCESS:
+                mStatus.setValue(ModelStatus.FINISHED_SUCCESS);
+                break;
+            case WorkoutService.RESULT_CONNECTION_FAILURE:
+                mStatus.setValue(ModelStatus.FINISHED_ERROR_CONNECTION);
+                break;
+            case WorkoutService.RESULT_PARSE_FAILURE:
+                mStatus.setValue(ModelStatus.FINISHED_ERROR_DATA_FORMAT);
+                break;
+            case WorkoutService.RESULT_UNKNOWN_FAILURE:
+                mStatus.setValue(ModelStatus.FINISHED_ERROR_UNKNOWN);
+                break;
+            default:
+                mStatus.setValue(ModelStatus.FINISHED_SUCCESS);
+                break;
+        }
 
         // The following set of logic to remove duplicates and sort the array is not optimized, but
         // considering that this is at the tail end of a comparatively very time-consuming operation
@@ -57,6 +74,7 @@ public class SpeedModel extends PeakModel<PeakSpeed> implements WorkoutResultRec
      */
     @Override
     public LiveData<List<PeakSpeed>> getData(String workoutTag) {
+        mStatus.setValue(ModelStatus.FETCHING);
         WorkoutService.startActionFetchPeakSpeeds(mContext, mResultReceiver, workoutTag);
         return mData;
     }

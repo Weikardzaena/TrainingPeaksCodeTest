@@ -11,6 +11,7 @@ import android.util.Log;
 
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakHeartRate;
 import com.kotula.nikolai.trainingpeakscodetest.data.PeakSpeed;
+import com.kotula.nikolai.trainingpeakscodetest.repos.ResultCode;
 import com.kotula.nikolai.trainingpeakscodetest.repos.concrete.HttpWorkoutRESTClient;
 import com.kotula.nikolai.trainingpeakscodetest.repos.concrete.UnitTestWorkoutRepo;
 import com.kotula.nikolai.trainingpeakscodetest.repos.interfaces.IWorkoutRepo;
@@ -27,6 +28,11 @@ public class WorkoutService extends IntentService {
     private static final String TAG = "WorkoutService";
     private static final String ACTION_FETCH_PEAK_HEART_RATES = "com.kotula.nikolai.trainingpeakscodetest.services.action.FETCH_PEAK_HEART_RATES";
     private static final String ACTION_FETCH_PEAK_SPEEDS = "com.kotula.nikolai.trainingpeakscodetest.services.action.FETCH_PEAK_SPEEDS";
+
+    public static final int RESULT_SUCCESS = 0;
+    public static final int RESULT_CONNECTION_FAILURE = -100;
+    public static final int RESULT_PARSE_FAILURE = -200;
+    public static final int RESULT_UNKNOWN_FAILURE = -1000;
 
     private static final String EXTRA_WORKOUT_TAG = "com.kotula.nikolai.trainingpeakscodetest.services.extra.WORKOUT_TAG";
 
@@ -100,16 +106,31 @@ public class WorkoutService extends IntentService {
     private void handleActionFetchPeakHeartRates(String workoutTag) {
         if ((mWorkoutRepo != null) && (mResultReceiver != null)) {
             Bundle bundle = new Bundle();
-            ArrayList<PeakHeartRate> peakHeartRates = new ArrayList<>();
-            mWorkoutRepo.getPeakHeartRates(workoutTag, peakHeartRates);
+            int statusCode = RESULT_UNKNOWN_FAILURE;
 
-            if (peakHeartRates != null) {
-                bundle.putParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE, new ArrayList<Parcelable>(peakHeartRates));
-            } else {
-                Log.e(TAG, "Something went wrong with fetching the data!");
+            ArrayList<PeakHeartRate> peakHeartRates = new ArrayList<>();
+            ResultCode resultCode = mWorkoutRepo.getPeakHeartRates(workoutTag, peakHeartRates);
+
+            switch (resultCode) {
+                case FAIL_CONNECTION:
+                    statusCode = RESULT_CONNECTION_FAILURE;
+                    break;
+                case FAIL_PARSE:
+                    statusCode = RESULT_PARSE_FAILURE;
+                    break;
+                case FAIL_STREAM:
+                    statusCode = RESULT_CONNECTION_FAILURE;
+                    break;
+                case SUCCESS:
+                    statusCode = RESULT_SUCCESS;
+                    break;
+                default:
+                    break;
             }
 
-            mResultReceiver.send(0, bundle);
+            bundle.putParcelableArrayList(PeakHeartRate.PARCEL_PEAK_HEART_RATE, new ArrayList<Parcelable>(peakHeartRates));
+
+            mResultReceiver.send(statusCode, bundle);
         }
     }
 
